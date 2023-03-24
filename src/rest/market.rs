@@ -1,4 +1,4 @@
-use super::Request;
+use super::{APIUrl, Request};
 use reqwest::Method;
 use serde::{Deserialize, Serialize};
 
@@ -9,6 +9,7 @@ pub struct PingRequest {}
 pub struct PingResponse {}
 
 impl Request for PingRequest {
+    const API: APIUrl = APIUrl::Spot;
     const ENDPOINT: &'static str = "/api/v3/ping";
     const METHOD: Method = Method::GET;
     type Response = PingResponse;

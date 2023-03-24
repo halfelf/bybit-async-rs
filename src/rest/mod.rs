@@ -1,4 +1,5 @@
 mod account;
+mod futures;
 mod general;
 mod market;
 mod userstream;
@@ -6,6 +7,7 @@ mod websocket;
 
 pub use self::{
     account::{GetAccountRequest, OrderRequest},
+    futures::*,
     market::PingRequest,
 };
 use crate::{
@@ -25,9 +27,16 @@ use reqwest::{
 use serde::{de::DeserializeOwned, Serialize};
 use sha2::Sha256;
 
-static RECV_WINDOW: usize = 5000;
+#[derive(Copy, Clone, Debug)]
+pub enum APIUrl {
+    Spot,
+    UsdMFutures,
+    CoinMFutures,
+    EuropeanOptions,
+}
 
 pub trait Request: Serialize {
+    const API: APIUrl;
     const ENDPOINT: &'static str;
     const METHOD: Method;
     const SIGNED: bool = false;
@@ -39,7 +48,6 @@ pub struct Binance {
     credential: Option<(String, String)>,
     client: Client,
     config: Config,
-    pub recv_window: usize,
 }
 
 impl Binance {
@@ -48,7 +56,6 @@ impl Binance {
             credential: None,
             client: Client::new(),
             config: Config::default(),
-            recv_window: RECV_WINDOW,
         }
     }
 
@@ -57,7 +64,6 @@ impl Binance {
             client: Client::new(),
             credential: Some((api_key.into(), api_secret.into())),
             config: Config::default(),
-            recv_window: RECV_WINDOW,
         }
     }
 
@@ -83,7 +89,7 @@ impl Binance {
                 params.push('&');
             }
             params.push_str(&format!("timestamp={}", Utc::now().timestamp_millis()));
-            params.push_str(&format!("&recvWindow={}", self.recv_window));
+            params.push_str(&format!("&recvWindow={}", self.config.recv_window));
 
             let signature = self.signature(&params, &body)?;
             params.push_str(&format!("&signature={}", signature));
@@ -91,7 +97,12 @@ impl Binance {
 
         let path = R::ENDPOINT.to_string();
 
-        let base = &self.config.rest_api_endpoint;
+        let base = match R::API {
+            APIUrl::Spot => &self.config.rest_api_endpoint,
+            APIUrl::UsdMFutures => &self.config.usdm_futures_rest_api_endpoint,
+            APIUrl::CoinMFutures => &self.config.coinm_futures_rest_api_endpoint,
+            APIUrl::EuropeanOptions => &self.config.european_options_rest_api_endpoint,
+        };
         let url = format!("{base}{path}?{params}");
 
         let mut custom_headers = HeaderMap::new();

@@ -1,4 +1,4 @@
-use super::Request;
+use super::{APIUrl, Request};
 use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, TimeInForce};
 use reqwest::Method;
 use serde::Serialize;
@@ -7,6 +7,7 @@ use serde::Serialize;
 pub struct GetAccountRequest {}
 
 impl Request for GetAccountRequest {
+    const API: APIUrl = APIUrl::Spot;
     const ENDPOINT: &'static str = "/api/v3/account";
     const METHOD: Method = Method::GET;
     const SIGNED: bool = true;
@@ -26,6 +27,7 @@ pub struct OrderRequest {
 }
 
 impl Request for OrderRequest {
+    const API: APIUrl = APIUrl::Spot;
     const ENDPOINT: &'static str = "/api/v3/order";
     const METHOD: Method = Method::POST;
     const SIGNED: bool = true;
