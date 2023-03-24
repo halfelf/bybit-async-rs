@@ -7,7 +7,7 @@ default_to_workspace = false
 
 [env]
 RUST_BACKTRACE = "1"
-RUST_LOG = "info"
+RUST_LOG = "binance_async=debug"
 
 [tasks.test]
 clear = true

@@ -10,8 +10,8 @@ readme = "README.md"
 repository = "https://github.com/dovahcrow/binance-async-rs"
 version = "0.2.0"
 
-[badges]
-travis-ci = {repository = "dovahcrow/binance-async-rs"}
+[features]
+print-response = []
 
 [lib]
 name = "binance_async"

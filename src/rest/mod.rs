@@ -17,7 +17,7 @@ use chrono::Utc;
 use fehler::{throw, throws};
 use hex::encode as hexify;
 use hmac::{Hmac, Mac};
-use log::trace;
+use log::{debug, trace};
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT},
     Client, Method, Response,
@@ -143,11 +143,14 @@ impl Binance {
 
     #[throws(Error)]
     async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> O {
-        // use serde_json::from_str;
-        // let body = resp.text().await?;
-        // println!("{body}");
-        // let resp: BinanceResponse<O> = from_str(&body)?;
-        let resp: BinanceResponse<O> = resp.json().await?;
+        let resp: BinanceResponse<O> = if cfg!(feature = "print-response") {
+            use serde_json::from_str;
+            let body = resp.text().await?;
+            debug!("Response is {body}");
+            from_str(&body)?
+        } else {
+            resp.json().await?
+        };
         resp.to_result()?
     }
 }
