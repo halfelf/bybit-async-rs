@@ -113,7 +113,7 @@ impl Request for GetCurrentPositionModeRequest {
 }
 ```
 
-Or, to make it simpler, use the macro:
+Or, to make it simpler, use the macro ([see in action](https://github.com/dovahcrow/binance-async-rs/blob/master/src/rest/usdm/account.rs)):
 ```rust
 crate::define_request! {
     Name => GetCurrentPositionMode;
