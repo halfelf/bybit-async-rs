@@ -82,7 +82,7 @@ impl Request for OrderRequest {
 ```
 This associates necessary information to each request struct.
 
-## How to add new requests
+## Missing Endpoints? You Can Add it Easily!
 
 Due to the amount of APIs Binance provides, it is hard to cover everything for this
 library. 
