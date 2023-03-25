@@ -3,7 +3,7 @@
 Unofficial Rust Library for the [Binance API](https://github.com/binance-exchange/binance-official-api-docs) with Async/Await and ergonomic design.
 
 [![Crates.io](https://img.shields.io/crates/v/binance-async.svg)](https://crates.io/crates/binance-async)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/dovahcrow/binance-async-rs/ci?style=flat-square)](https://github.com/dovahcrow/binance-async-rs/actions/workflows/ci.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/dovahcrow/binance-async-rs/ci.yml?style=flat-square)](https://github.com/dovahcrow/binance-async-rs/actions/workflows/ci.yml)
 [![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
