@@ -6,19 +6,19 @@ macro_rules! define_request {
         Endpoint => $endpoint: expr;
         Method => $method: expr;
         Signed => $signed: expr;
-        Request => { $($req_field: ident : $req_type: ty,)* };
-        Response => { $($resp_field: ident : $resp_type: ty,)* };
+        Request => { $($req_def:tt)* };
+        Response => { $($resp_def:tt)* };
     ) => {
         paste::paste! {
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
             pub struct [<$name Request>] {
-                $(pub $req_field: $req_type),*
+                $($req_def)*
             }
 
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
             #[serde(rename_all = "camelCase")]
             pub struct [<$name Response>] {
-                $(pub $resp_field: $resp_type),*
+                $($resp_def)*
             }
 
             impl crate::rest::Request for [<$name Request>] {
@@ -37,13 +37,13 @@ macro_rules! define_request {
         Endpoint => $endpoint: expr;
         Method => $method: expr;
         Signed => $signed: expr;
-        Request => { $($req_field: ident : $req_type: ty,)* };
+        Request => { $($req_def:tt)* };
         Response => $resp_ty: ty;
     ) => {
         paste::paste! {
             #[derive(Debug, Clone, Default, serde::Serialize, serde::Deserialize)]
             pub struct [<$name Request>] {
-                $(pub $req_field: $req_type),*
+                $($req_def)*
             }
 
             impl crate::rest::Request for [<$name Request>] {

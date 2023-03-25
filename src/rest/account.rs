@@ -19,14 +19,14 @@ crate::define_request! {
     Method => Method::GET;
     Signed => true;
     Request => {
-        symbol: String,
-        qty: f64,
-        price: f64,
-        stop_price: Option<f64>,
-        order_side: OrderSide,
-        order_type: OrderType,
-        time_in_force: TimeInForce,
-        new_client_order_id: Option<String>,
+        pub symbol: String,
+        pub qty: f64,
+        pub price: f64,
+        pub stop_price: Option<f64>,
+        pub order_side: OrderSide,
+        pub order_type: OrderType,
+        pub time_in_force: TimeInForce,
+        pub new_client_order_id: Option<String>,
     };
     Response => OrderInfo;
 }

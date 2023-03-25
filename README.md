@@ -123,7 +123,7 @@ crate::define_request! {
     Signed => true;
     Request => {};
     Response => {
-        dual_side_position: bool,
+        pub dual_side_position: bool,
     };
 }
 ```
