@@ -44,9 +44,9 @@ is defined as:
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct OrderRequest {
     pub symbol: String,
-    pub qty: f64,
-    pub price: f64,
-    pub stop_price: Option<f64>,
+    pub qty: Decimal,
+    pub price: Decimal,
+    pub stop_price: Option<Decimal>,
     pub order_side: OrderSide,
     pub order_type: OrderType,
     pub time_in_force: TimeInForce,
@@ -57,8 +57,8 @@ You can just fill in the fields you want to fill, and leave the rest to `Default
 ```rust
 let req = OrderRequest {
     symbol: "btcusd".into(),
-    qty: 3.,
-    price: 20000.,
+    qty: 3.try_into().unwrap(),
+    price: 20000.try_into().unwrap(),
     ..Default::default()
 };
 

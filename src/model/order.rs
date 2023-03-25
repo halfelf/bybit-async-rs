@@ -1,3 +1,4 @@
+use crate::parser::{string_or_decimal, string_or_decimal_opt};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -102,4 +103,57 @@ impl Default for OrderSide {
     fn default() -> Self {
         OrderSide::Buy
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CanceledOrder {
+    pub client_order_id: String,
+    #[serde(with = "string_or_decimal")]
+    pub cum_qty: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub cum_quote: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub executed_qty: Decimal,
+    pub order_id: u64,
+    #[serde(with = "string_or_decimal")]
+    pub orig_qty: Decimal,
+    pub orig_type: String,
+    #[serde(with = "string_or_decimal")]
+    pub price: Decimal,
+    pub reduce_only: bool,
+    pub side: String,
+    pub position_side: String,
+    pub status: String,
+    #[serde(with = "string_or_decimal")]
+    pub stop_price: Decimal,
+    pub close_position: bool,
+    pub symbol: String,
+    pub time_in_force: String,
+    #[serde(rename = "type")]
+    pub type_name: String,
+    #[serde(default)]
+    #[serde(with = "string_or_decimal_opt")]
+    pub activate_price: Option<Decimal>,
+    #[serde(default)]
+    #[serde(with = "string_or_decimal_opt")]
+    pub price_rate: Option<Decimal>,
+    pub update_time: u64,
+    pub working_type: String,
+    price_protect: bool,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum PositionSide {
+    Both,
+    Long,
+    Short,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum WorkingType {
+    MarkPrice,
+    ContractPrice,
 }

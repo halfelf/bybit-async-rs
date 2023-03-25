@@ -1,7 +1,8 @@
 mod order;
 pub mod websocket;
 
-pub use self::order::{FillInfo, OrderInfo, OrderSide, OrderType};
+pub use self::order::*;
+use crate::parser::string_or_decimal;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -54,18 +55,18 @@ pub struct AccountInformation {
 #[serde(rename_all = "camelCase")]
 pub struct Balance {
     pub asset: String,
-    #[serde(with = "rust_decimal::serde::str")]
+    #[serde(with = "string_or_decimal")]
     pub free: Decimal,
-    #[serde(with = "rust_decimal::serde::str")]
+    #[serde(with = "string_or_decimal")]
     pub locked: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Bids {
-    #[serde(with = "string_or_float")]
-    pub price: f64,
-    #[serde(with = "string_or_float")]
-    pub qty: f64,
+    #[serde(with = "string_or_decimal")]
+    pub price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub qty: Decimal,
 
     // Never serialized.
     #[serde(skip_serializing, rename = "ignore")]
@@ -74,10 +75,10 @@ pub struct Bids {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Asks {
-    #[serde(with = "string_or_float")]
-    pub price: f64,
-    #[serde(with = "string_or_float")]
-    pub qty: f64,
+    #[serde(with = "string_or_decimal")]
+    pub price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub qty: Decimal,
 
     // Never serialized.
     #[serde(skip_serializing, rename = "ignore")]
@@ -103,8 +104,8 @@ pub enum Prices {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SymbolPrice {
     pub symbol: String,
-    #[serde(with = "string_or_float")]
-    pub price: f64,
+    #[serde(with = "string_or_decimal")]
+    pub price: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -123,14 +124,14 @@ pub enum KlineSummaries {
 #[serde(rename_all = "camelCase")]
 pub struct Ticker {
     pub symbol: String,
-    #[serde(with = "string_or_float")]
-    pub bid_price: f64,
-    #[serde(with = "string_or_float")]
-    pub bid_qty: f64,
-    #[serde(with = "string_or_float")]
-    pub ask_price: f64,
-    #[serde(with = "string_or_float")]
-    pub ask_qty: f64,
+    #[serde(with = "string_or_decimal")]
+    pub bid_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub bid_qty: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub ask_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub ask_qty: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -139,12 +140,12 @@ pub struct TradeHistory {
     pub symbol: String,
     pub id: u64,
     pub order_id: u64,
-    #[serde(with = "string_or_float")]
-    pub price: f64,
-    #[serde(with = "string_or_float")]
-    pub qty: f64,
-    #[serde(with = "string_or_float")]
-    pub commission: f64,
+    #[serde(with = "string_or_decimal")]
+    pub price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub qty: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub commission: Decimal,
     pub commission_asset: String,
     pub time: u64,
     pub is_buyer: bool,
@@ -156,28 +157,28 @@ pub struct TradeHistory {
 #[serde(rename_all = "camelCase")]
 pub struct PriceStats {
     pub symbol: String,
-    #[serde(with = "string_or_float")]
-    pub price_change: f64,
-    #[serde(with = "string_or_float")]
-    pub price_change_percent: f64,
-    #[serde(with = "string_or_float")]
-    pub weighted_avg_price: f64,
-    #[serde(with = "string_or_float")]
-    pub prev_close_price: f64,
-    #[serde(with = "string_or_float")]
-    pub last_price: f64,
-    #[serde(with = "string_or_float")]
-    pub bid_price: f64,
-    #[serde(with = "string_or_float")]
-    pub ask_price: f64,
-    #[serde(with = "string_or_float")]
-    pub open_price: f64,
-    #[serde(with = "string_or_float")]
-    pub high_price: f64,
-    #[serde(with = "string_or_float")]
-    pub low_price: f64,
-    #[serde(with = "string_or_float")]
-    pub volume: f64,
+    #[serde(with = "string_or_decimal")]
+    pub price_change: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub price_change_percent: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub weighted_avg_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub prev_close_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub last_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub bid_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub ask_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub open_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub high_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub low_price: Decimal,
+    #[serde(with = "string_or_decimal")]
+    pub volume: Decimal,
     pub open_time: u64,
     pub close_time: u64,
     pub first_id: i64, // For dummy symbol "123456", it is -1
@@ -189,25 +190,25 @@ pub struct PriceStats {
 pub struct KlineSummary {
     pub open_time: i64,
 
-    pub open: f64,
+    pub open: Decimal,
 
-    pub high: f64,
+    pub high: Decimal,
 
-    pub low: f64,
+    pub low: Decimal,
 
-    pub close: f64,
+    pub close: Decimal,
 
-    pub volume: f64,
+    pub volume: Decimal,
 
     pub close_time: i64,
 
-    pub quote_asset_volume: f64,
+    pub quote_asset_volume: Decimal,
 
     pub number_of_trades: i64,
 
-    pub taker_buy_base_asset_volume: f64,
+    pub taker_buy_base_asset_volume: Decimal,
 
-    pub taker_buy_quote_asset_volume: f64,
+    pub taker_buy_quote_asset_volume: Decimal,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -458,35 +459,4 @@ pub enum OrderStatus {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum OrderRejectReason {
     None,
-}
-
-mod string_or_float {
-    use std::fmt;
-
-    use serde::{de, Deserialize, Deserializer, Serializer};
-
-    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        T: fmt::Display,
-        S: Serializer,
-    {
-        serializer.collect_str(value)
-    }
-
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<f64, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        #[serde(untagged)]
-        enum StringOrFloat {
-            String(String),
-            Float(f64),
-        }
-
-        match StringOrFloat::deserialize(deserializer)? {
-            StringOrFloat::String(s) => s.parse().map_err(de::Error::custom),
-            StringOrFloat::Float(i) => Ok(i),
-        }
-    }
 }

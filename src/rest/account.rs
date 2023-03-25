@@ -1,6 +1,7 @@
 use super::APIUrl;
 use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, TimeInForce};
 use reqwest::Method;
+use rust_decimal::Decimal;
 
 crate::define_request! {
     Name => GetAccount;
@@ -20,9 +21,9 @@ crate::define_request! {
     Signed => true;
     Request => {
         pub symbol: String,
-        pub qty: f64,
-        pub price: f64,
-        pub stop_price: Option<f64>,
+        pub qty: Decimal,
+        pub price: Option<Decimal>,
+        pub stop_price: Option<Decimal>,
         pub order_side: OrderSide,
         pub order_type: OrderType,
         pub time_in_force: TimeInForce,
