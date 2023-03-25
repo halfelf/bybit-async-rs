@@ -1,9 +1,9 @@
 use super::{APIUrl, Request};
 use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, TimeInForce};
 use reqwest::Method;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Default, Serialize)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize)]
 pub struct GetAccountRequest {}
 
 impl Request for GetAccountRequest {
@@ -14,7 +14,7 @@ impl Request for GetAccountRequest {
     type Response = AccountInformation;
 }
 
-#[derive(Debug, Clone, Default, Serialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct OrderRequest {
     pub symbol: String,
     pub qty: f64,
