@@ -1,14 +1,13 @@
 mod account;
-mod futures;
-mod general;
 mod market;
+mod usdm;
 mod userstream;
 mod websocket;
 
 pub use self::{
     account::{GetAccountRequest, OrderRequest},
-    futures::*,
     market::PingRequest,
+    usdm::*,
 };
 use crate::{
     config::Config,

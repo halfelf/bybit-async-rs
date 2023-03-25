@@ -112,3 +112,18 @@ impl Request for GetCurrentPositionModeRequest {
     type Response = GetCurrentPositionModeResponse;
 }
 ```
+
+Or, to make it simpler, use the macro:
+```rust
+crate::define_request! {
+    Name => GetCurrentPositionMode;
+    API => APIUrl::UsdMFutures;
+    Endpoint => "/fapi/v1/positionSide/dual";
+    Method => Method::GET;
+    Signed => true;
+    Request => {};
+    Response => {
+        dual_side_position: bool,
+    };
+}
+```
