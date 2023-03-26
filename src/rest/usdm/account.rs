@@ -1,9 +1,9 @@
-use crate::rest::APIUrl;
+use crate::model::Product;
 use reqwest::Method;
 
 crate::define_request! {
     Name => GetCurrentPositionMode;
-    API => APIUrl::UsdMFutures;
+    Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/positionSide/dual";
     Method => Method::GET;
     Signed => true;

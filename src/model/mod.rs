@@ -1,10 +1,17 @@
 mod order;
-pub mod websocket;
 
 pub use self::order::*;
 use crate::parser::string_or_decimal;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
+
+#[derive(Copy, Clone, Debug)]
+pub enum Product {
+    Spot,
+    UsdMFutures,
+    CoinMFutures,
+    EuropeanOptions,
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]

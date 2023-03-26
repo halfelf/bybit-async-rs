@@ -1,14 +1,15 @@
-use serde::{Deserialize, Serialize};
+use http::StatusCode;
+use serde::Deserialize;
 use thiserror::Error;
 
-#[derive(Deserialize, Serialize, Debug, Clone, Error)]
+#[derive(Deserialize, Debug, Clone, Error)]
 #[error("Binance returns error: {msg}")]
 pub struct BinanceResponseError {
     pub code: i64,
     pub msg: String,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone)]
 #[serde(untagged)]
 pub enum BinanceResponse<T> {
     Success(T),
@@ -24,16 +25,22 @@ impl<T: for<'a> Deserialize<'a>> BinanceResponse<T> {
     }
 }
 
-#[derive(Debug, Error, Serialize, Deserialize, Clone)]
+#[derive(Debug, Error, Clone)]
 pub enum BinanceError {
-    #[error("Assets not found")]
-    AssetsNotFound,
-    #[error("Symbol not found")]
-    SymbolNotFound,
     #[error("No Api key set for private api")]
-    NoApiKeySet,
+    MissingApiKey,
+    #[error("No Api secret set for private api")]
+    MissingApiSecret,
     #[error("No stream is subscribed")]
     NoStreamSubscribed,
     #[error("Websocket is closed")]
     WebsocketClosed,
+    #[error("Topics is empty")]
+    EmptyTopics,
+    #[error("Unknown stream {0}")]
+    UnknownStream(String),
+    #[error("Stream {0} not implemented yet")]
+    StreamNotImplemented(String),
+    #[error("Error when try to connect websocket: {0} - {1}")]
+    StartWebsocketError(StatusCode, String),
 }

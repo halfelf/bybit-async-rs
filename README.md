@@ -117,7 +117,7 @@ Or, to make it simpler, use the macro ([see in action](https://github.com/dovahc
 ```rust
 crate::define_request! {
     Name => GetCurrentPositionMode;
-    API => APIUrl::UsdMFutures;
+    Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/positionSide/dual";
     Method => Method::GET;
     Signed => true;

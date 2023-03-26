@@ -1,11 +1,10 @@
-use super::APIUrl;
-use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, TimeInForce};
+use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, Product, TimeInForce};
 use reqwest::Method;
 use rust_decimal::Decimal;
 
 crate::define_request! {
     Name => GetAccount;
-    API => APIUrl::Spot;
+    Product => Product::Spot;
     Endpoint => "/api/v3/account";
     Method => Method::GET;
     Signed => true;
@@ -15,7 +14,7 @@ crate::define_request! {
 
 crate::define_request! {
     Name => Order;
-    API => APIUrl::Spot;
+    Product => Product::Spot;
     Endpoint => "/api/v3/order";
     Method => Method::GET;
     Signed => true;

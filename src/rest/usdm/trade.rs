@@ -1,13 +1,12 @@
-use crate::{
-    model::{CanceledOrder, OrderSide, OrderType, PositionSide, TimeInForce, WorkingType},
-    rest::APIUrl,
+use crate::model::{
+    CanceledOrder, OrderSide, OrderType, PositionSide, Product, TimeInForce, WorkingType,
 };
 use reqwest::Method;
 use rust_decimal::Decimal;
 
 crate::define_request! {
     Name => NewOrder;
-    API => APIUrl::UsdMFutures;
+    Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/order";
     Method => Method::POST;
     Signed => true;
@@ -32,21 +31,21 @@ crate::define_request! {
 
 crate::define_request! {
     Name => CancelOrder;
-    API => APIUrl::UsdMFutures;
+    Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/batchOrders";
     Method => Method::DELETE;
     Signed => true;
     Request => {
         pub symbol: String,
         pub order_id: u64,
-        pub orig_client_order_id: String,
+        pub orig_client_order_id: String
     };
     Response => CanceledOrder;
 }
 
 crate::define_request! {
     Name => CancelMultipleOrders;
-    API => APIUrl::UsdMFutures;
+    Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/batchOrders";
     Method => Method::DELETE;
     Signed => true;

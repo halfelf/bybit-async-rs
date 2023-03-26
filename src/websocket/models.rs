@@ -1,41 +1,12 @@
-use super::{
-    string_or_decimal, Asks, Bids, Kline, OrderBook, OrderExecType, OrderRejectReason, OrderStatus,
-    OrderType, Side, TimeInForce,
+use crate::{
+    model::{
+        Asks, Bids, Kline, OrderExecType, OrderRejectReason, OrderStatus, OrderType, Side,
+        TimeInForce,
+    },
+    parser::string_or_decimal,
 };
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Subscription {
-    UserData(String),            // listen key
-    AggregateTrade(String),      //symbol
-    Trade(String),               //symbol
-    Candlestick(String, String), //symbol, interval
-    MiniTicker(String),          //symbol
-    MiniTickerAll,
-    Ticker(String), // symbol
-    TickerAll,
-    OrderBook(String, i64), //symbol, depth
-    Depth(String),          //symbol
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub enum BinanceWebsocketMessage {
-    UserOrderUpdate(UserOrderUpdate),
-    UserAccountUpdate(AccountUpdate),
-    AggregateTrade(AggregateTrade),
-    Trade(TradeMessage),
-    Candlestick(CandelStickMessage),
-    MiniTicker(MiniTicker),
-    MiniTickerAll(Vec<MiniTicker>),
-    Ticker(Ticker),
-    TickerAll(Vec<Ticker>),
-    OrderBook(OrderBook),
-    Depth(Depth),
-    Ping,
-    Pong,
-    Binary(Vec<u8>), // Unexpected, unparsed
-}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -64,30 +35,47 @@ pub struct TradeMessage {
     pub m_ignore: bool,
 }
 
+/// The Aggregate Trade Streams push trade information that is aggregated for a single taker order.
+///
+/// Stream Name: \<symbol\>@aggTrade
+///
+/// Update Speed: Real-time
+///
+/// <https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md#aggregate-trade-streams>
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AggregateTrade {
     #[serde(rename = "e")]
     pub event_type: String,
+
     #[serde(rename = "E")]
     pub event_time: u64,
+
     #[serde(rename = "s")]
     pub symbol: String,
+
     #[serde(rename = "a")]
     pub aggregated_trade_id: u64,
+
     #[serde(rename = "p", with = "string_or_decimal")]
     pub price: Decimal,
+
     #[serde(rename = "q", with = "string_or_decimal")]
     pub qty: Decimal,
+
     #[serde(rename = "f")]
     pub first_break_trade_id: u64,
+
     #[serde(rename = "l")]
     pub last_break_trade_id: u64,
+
     #[serde(rename = "T")]
     pub trade_order_time: u64,
+
     #[serde(rename = "m")]
     pub is_buyer_maker: bool,
-    #[serde(skip_serializing, rename = "M")]
+
+    #[serde(skip, rename = "M")]
     pub m_ignore: bool,
 }
 

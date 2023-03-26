@@ -8,7 +8,7 @@ use std::env::var;
 async fn get_account() {
     env_logger::init();
 
-    let binance = Binance::with_credential(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
     let ai = binance.request(GetAccountRequest {}).await?;
     println!("{ai:?}");
 }

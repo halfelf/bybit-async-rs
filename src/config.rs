@@ -19,16 +19,16 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             rest_api_endpoint: "https://api.binance.com".into(),
-            ws_endpoint: "wss://stream.binance.com:9443/ws".into(),
+            ws_endpoint: "wss://stream.binance.com:9443".into(),
 
             usdm_futures_rest_api_endpoint: "https://fapi.binance.com".into(),
-            usdm_futures_ws_endpoint: "wss://fstream.binance.com/ws".into(),
+            usdm_futures_ws_endpoint: "wss://fstream.binance.com".into(),
 
             coinm_futures_rest_api_endpoint: "https://dapi.binance.com".into(),
-            coinm_futures_ws_endpoint: "wss://dstream.binance.com/ws".into(),
+            coinm_futures_ws_endpoint: "wss://dstream.binance.com".into(),
 
             european_options_rest_api_endpoint: "https://eapi.binance.com".into(),
-            european_options_ws_endpoint: "wss://estream.binance.com/ws".into(),
+            european_options_ws_endpoint: "wss://estream.binance.com".into(),
 
             recv_window: 5000,
         }

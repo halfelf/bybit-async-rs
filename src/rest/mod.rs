@@ -1,8 +1,6 @@
 mod account;
 mod market;
 mod usdm;
-mod userstream;
-mod websocket;
 
 pub use self::{
     account::{GetAccountRequest, OrderRequest},
@@ -11,7 +9,9 @@ pub use self::{
 };
 use crate::{
     config::Config,
-    error::{BinanceError, BinanceResponse},
+    error::{BinanceError::*, BinanceResponse},
+    model::Product,
+    websocket::{BinanceWebsocket, WebsocketMessage},
 };
 use anyhow::Error;
 use chrono::Utc;
@@ -25,45 +25,51 @@ use reqwest::{
 };
 use serde::{de::DeserializeOwned, Serialize};
 use sha2::Sha256;
-
-#[derive(Copy, Clone, Debug)]
-pub enum APIUrl {
-    Spot,
-    UsdMFutures,
-    CoinMFutures,
-    EuropeanOptions,
-}
+use tokio_tungstenite::connect_async;
+use url::Url;
 
 pub trait Request: Serialize {
-    const API: APIUrl;
+    const PRODUCT: Product;
     const ENDPOINT: &'static str;
     const METHOD: Method;
+    const KEYED: bool = false; // SIGNED imples KEYED no matter KEYED is true or false
     const SIGNED: bool = false;
     type Response: DeserializeOwned;
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Binance {
-    credential: Option<(String, String)>,
+    key: Option<String>,
+    secret: Option<String>,
     client: Client,
     config: Config,
 }
 
 impl Binance {
     pub fn new() -> Self {
+        Default::default()
+    }
+
+    pub fn with_key(api_key: &str) -> Self {
         Binance {
-            credential: None,
             client: Client::new(),
+            key: Some(api_key.into()),
+            secret: None,
             config: Config::default(),
         }
     }
 
-    pub fn with_credential(api_key: &str, api_secret: &str) -> Self {
+    pub fn with_key_and_secret(api_key: &str, api_secret: &str) -> Self {
         Binance {
             client: Client::new(),
-            credential: Some((api_key.into(), api_secret.into())),
+            key: Some(api_key.into()),
+            secret: Some(api_secret.into()),
             config: Config::default(),
         }
+    }
+
+    pub fn config(&mut self, config: Config) {
+        self.config = config;
     }
 
     #[throws(Error)]
@@ -96,11 +102,11 @@ impl Binance {
 
         let path = R::ENDPOINT.to_string();
 
-        let base = match R::API {
-            APIUrl::Spot => &self.config.rest_api_endpoint,
-            APIUrl::UsdMFutures => &self.config.usdm_futures_rest_api_endpoint,
-            APIUrl::CoinMFutures => &self.config.coinm_futures_rest_api_endpoint,
-            APIUrl::EuropeanOptions => &self.config.european_options_rest_api_endpoint,
+        let base = match R::PRODUCT {
+            Product::Spot => &self.config.rest_api_endpoint,
+            Product::UsdMFutures => &self.config.usdm_futures_rest_api_endpoint,
+            Product::CoinMFutures => &self.config.coinm_futures_rest_api_endpoint,
+            Product::EuropeanOptions => &self.config.european_options_rest_api_endpoint,
         };
         let url = format!("{base}{path}?{params}");
 
@@ -112,8 +118,11 @@ impl Binance {
                 HeaderValue::from_static("application/x-www-form-urlencoded"),
             );
         }
-        if let Ok((key, _)) = self.check_key() {
-            // This is for user stream: user stream requests need api key in the header but no signature. WEIRD
+        if R::SIGNED || R::KEYED {
+            let key = match &self.key {
+                Some(key) => key,
+                None => throw!(MissingApiKey),
+            };
             custom_headers.insert(
                 HeaderName::from_static("x-mbx-apikey"),
                 HeaderValue::from_str(key)?,
@@ -132,16 +141,50 @@ impl Binance {
     }
 
     #[throws(Error)]
-    fn check_key(&self) -> (&str, &str) {
-        match self.credential.as_ref() {
-            None => throw!(BinanceError::NoApiKeySet),
-            Some((k, s)) => (&**k, &**s),
+    pub async fn subscribe<I, S, M>(&self, topics: I) -> BinanceWebsocket<M>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+        M: WebsocketMessage,
+    {
+        let mut combined = String::new();
+        for topic in topics {
+            if !combined.is_empty() {
+                combined.push('/');
+            }
+
+            combined.push_str(topic.as_ref())
         }
+
+        if combined.is_empty() {
+            throw!(EmptyTopics)
+        }
+
+        let base = match M::PRODUCT {
+            Product::Spot => &self.config.ws_endpoint,
+            Product::UsdMFutures => &self.config.usdm_futures_ws_endpoint,
+            Product::CoinMFutures => &self.config.coinm_futures_ws_endpoint,
+            Product::EuropeanOptions => &self.config.european_options_ws_endpoint,
+        };
+        let endpoint = Url::parse(&format!("{}/stream?streams={}", base, combined)).unwrap();
+        debug!("ws endpoint: {endpoint:?}");
+        let (stream, _) = match connect_async(endpoint).await {
+            Ok(v) => v,
+            Err(tungstenite::Error::Http(ref http)) => throw!(StartWebsocketError(
+                http.status(),
+                String::from_utf8_lossy(http.body().as_deref().unwrap_or_default()).to_string()
+            )),
+            Err(e) => throw!(e),
+        };
+        BinanceWebsocket::new(stream)
     }
 
     #[throws(Error)]
     fn signature(&self, params: &str, body: &str) -> String {
-        let (_, secret) = self.check_key()?;
+        let secret = match &self.secret {
+            Some(s) => s,
+            None => throw!(MissingApiSecret),
+        };
         // Signature: hex(HMAC_SHA256(queries + data))
         let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes()).unwrap();
         let sign_message = format!("{}{}", params, body);
@@ -175,7 +218,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_query() {
-        let tr = Binance::with_credential(
+        let tr = Binance::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -206,7 +249,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_body() {
-        let tr = Binance::with_credential(
+        let tr = Binance::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -237,7 +280,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_query_body() {
-        let tr = Binance::with_credential(
+        let tr = Binance::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -273,7 +316,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_body2() {
-        let tr = Binance::with_credential(
+        let tr = Binance::with_key_and_secret(
             "vj1e6h50pFN9CsXT5nsL25JkTuBHkKw3zJhsA6OPtruIRalm20vTuXqF3htCZeWW",
             "5Cjj09rLKWNVe7fSalqgpilh5I3y6pPplhOukZChkusLqqi9mQyFk34kJJBTdlEJ",
         );
