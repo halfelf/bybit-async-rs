@@ -26,13 +26,11 @@ Rust 1.60
 
 ## Usage
 
-This library is just revived. Please use the git version for now.
-
-~~Add this to your Cargo.toml~~
+Add this to your Cargo.toml
 
 ```toml
 [dependencies]
-binance-async = 0.2
+binance-async = 0.3
 ```
 
 Examples located in the examples folder.
