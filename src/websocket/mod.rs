@@ -1,19 +1,17 @@
-mod coinm;
+pub mod coinm;
 mod models;
-mod spot;
-mod usdm;
+pub mod spot;
+pub mod usdm;
 
-pub use self::{
-    coinm::CoinMWebsocketMessage, models::*, spot::SpotWebsocketMessage, usdm::UsdMWebsocketMessage,
-};
 use crate::{
     error::BinanceError::{self, *},
-    model::Product,
+    models::Product,
     Config,
 };
 use fehler::{throw, throws};
 use futures::{stream::Stream, StreamExt};
 use log::debug;
+pub use models::*;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, value::RawValue};
@@ -28,7 +26,7 @@ use tungstenite::Message;
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
-pub trait WebsocketMessage: Sized {
+pub trait ParseMessage: Sized {
     const PRODUCT: Product;
 
     fn parse(stream: &str, data: &str) -> Result<Self, BinanceError>;
@@ -41,7 +39,7 @@ pub struct BinanceWebsocket<M> {
 
 impl<M> BinanceWebsocket<M>
 where
-    M: WebsocketMessage,
+    M: ParseMessage,
 {
     #[throws(BinanceError)]
     pub async fn new<I, S>(topics: I) -> BinanceWebsocket<M>
@@ -104,7 +102,7 @@ struct MessageWithTopic<'a> {
 
 impl<M> Stream for BinanceWebsocket<M>
 where
-    M: WebsocketMessage + Unpin + std::fmt::Debug,
+    M: ParseMessage + Unpin + std::fmt::Debug,
 {
     type Item = Result<M, BinanceError>;
 

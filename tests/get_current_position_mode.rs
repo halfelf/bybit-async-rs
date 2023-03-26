@@ -3,7 +3,7 @@ use binance_async::{rest::usdm, Binance};
 use fehler::throws;
 use std::env::var;
 
-#[throws(BinanceError)]
+#[throws(Error)]
 #[tokio::test]
 async fn get_current_position_mode() {
     env_logger::init();

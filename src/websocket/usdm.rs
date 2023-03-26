@@ -1,9 +1,9 @@
 use super::AggregateTrade;
 use crate::{
     error::BinanceError::{self, *},
-    model::{ExecutionType, OrderSide, OrderStatus, OrderType, Product, TimeInForce},
+    models::{ExecutionType, OrderSide, OrderStatus, OrderType, Product, TimeInForce},
     parser::{string_or_decimal, string_or_decimal_opt},
-    websocket::WebsocketMessage,
+    websocket::ParseMessage,
 };
 use fehler::{throw, throws};
 use rust_decimal::Decimal;
@@ -11,7 +11,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::from_str;
 
 #[derive(Debug, Clone, Serialize)]
-pub enum UsdMWebsocketMessage {
+#[non_exhaustive]
+pub enum WebsocketMessage {
     // User Data Stream
     UserOrderUpdate(OrderUpdate),
     UserAccountUpdate(AccountUpdate),
@@ -28,7 +29,7 @@ pub enum UsdMWebsocketMessage {
     // Depth(Depth),
 }
 
-impl WebsocketMessage for UsdMWebsocketMessage {
+impl ParseMessage for WebsocketMessage {
     const PRODUCT: Product = Product::UsdMFutures;
 
     #[throws(BinanceError)]

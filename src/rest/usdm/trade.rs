@@ -1,4 +1,4 @@
-use crate::model::{
+use crate::models::{
     CanceledOrder, NewOrderResponseType, OrderSide, OrderType, PositionSide, Product, TimeInForce,
     WorkingType,
 };

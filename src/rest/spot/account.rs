@@ -1,4 +1,4 @@
-use crate::model::{AccountInformation, OrderInfo, OrderSide, OrderType, Product, TimeInForce};
+use crate::models::{AccountInformation, OrderInfo, OrderSide, OrderType, Product, TimeInForce};
 use reqwest::Method;
 use rust_decimal::Decimal;
 

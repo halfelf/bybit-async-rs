@@ -1,6 +1,6 @@
 use anyhow::Error;
 use binance_async::{
-    model::{OrderSide, OrderType, TimeInForce},
+    models::{OrderSide, OrderType, TimeInForce},
     rest::usdm,
     Binance,
 };

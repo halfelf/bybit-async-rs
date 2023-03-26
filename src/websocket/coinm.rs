@@ -1,26 +1,27 @@
 use super::models::AggregateTrade;
 use crate::{
     error::BinanceError::{self, *},
-    model::Product,
-    websocket::WebsocketMessage,
+    models::Product,
+    websocket::ParseMessage,
 };
 use fehler::{throw, throws};
 use serde::Serialize;
 use serde_json::from_str;
 
 #[derive(Debug, Clone, Serialize)]
-pub enum CoinMWebsocketMessage {
+#[non_exhaustive]
+pub enum WebsocketMessage {
     AggregateTrade(AggregateTrade),
 }
 
-impl WebsocketMessage for CoinMWebsocketMessage {
+impl ParseMessage for WebsocketMessage {
     const PRODUCT: Product = Product::CoinMFutures;
 
     #[throws(BinanceError)]
     fn parse(stream: &str, data: &str) -> Self {
         if stream.ends_with("@aggTrade") {
             let value: AggregateTrade = from_str(data)?;
-            CoinMWebsocketMessage::AggregateTrade(value)
+            Self::AggregateTrade(value)
         } else if stream.contains("@markPrice") {
             throw!(StreamNotImplemented(stream.into()))
         } else if stream.starts_with("!markPrice@arr") {

@@ -1,5 +1,5 @@
 use crate::{
-    model::{
+    models::{
         Asks, Bids, Kline, OrderExecType, OrderRejectReason, OrderStatus, OrderType, Side,
         TimeInForce,
     },

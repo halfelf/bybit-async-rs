@@ -12,7 +12,7 @@ Unofficial Rust Library for the [Binance API](https://github.com/binance-exchang
 This library borrows code from Flavio Oliveira (wisespace-io)'s [work](https://github.com/wisespace-io/binance-rs). Thanks for his excellent library!
 
 This repo is at its early stage, not all requests/websockets are implemented.
-However, the related mechanism is already there, adding support for new requests/websocket events
+However, the related mechanism is already there: adding support for new requests/websocket events
 should only require [several lines of code](#missing-endpoints-you-can-add-it-easily). PRs are very welcomed!
 
 ## Risk Warning

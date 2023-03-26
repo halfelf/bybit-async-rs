@@ -7,7 +7,7 @@ use crate::{
         BinanceError::{self, *},
         BinanceResponse,
     },
-    model::Product,
+    models::Product,
 };
 use chrono::Utc;
 use fehler::{throw, throws};
@@ -167,10 +167,11 @@ impl Binance {
 #[cfg(test)]
 mod test {
     use super::Binance;
+    use anyhow::Error;
     use fehler::throws;
     use url::{form_urlencoded::Serializer, Url};
 
-    #[throws(BinanceError)]
+    #[throws(Error)]
     #[test]
     fn signature_query() {
         let tr = Binance::with_key_and_secret(
@@ -201,7 +202,7 @@ mod test {
         );
     }
 
-    #[throws(BinanceError)]
+    #[throws(Error)]
     #[test]
     fn signature_body() {
         let tr = Binance::with_key_and_secret(
@@ -232,7 +233,7 @@ mod test {
         );
     }
 
-    #[throws(BinanceError)]
+    #[throws(Error)]
     #[test]
     fn signature_query_body() {
         let tr = Binance::with_key_and_secret(
@@ -268,7 +269,7 @@ mod test {
         );
     }
 
-    #[throws(BinanceError)]
+    #[throws(Error)]
     #[test]
     fn signature_body2() {
         let tr = Binance::with_key_and_secret(

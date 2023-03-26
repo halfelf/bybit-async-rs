@@ -1,6 +1,6 @@
 use anyhow::Error;
 use binance_async::{
-    rest::usdm::StartUserDataStreamRequest, websocket::UsdMWebsocketMessage, Binance,
+    rest::usdm::StartUserDataStreamRequest, websocket::usdm::WebsocketMessage, Binance,
     BinanceWebsocket,
 };
 use fehler::throws;
@@ -14,7 +14,7 @@ async fn main() {
 
     let binance = Binance::with_key(&var("BINANCE_KEY")?);
     let listen_key = binance.request(StartUserDataStreamRequest {}).await?;
-    let mut ws: BinanceWebsocket<UsdMWebsocketMessage> = BinanceWebsocket::new(&[
+    let mut ws: BinanceWebsocket<WebsocketMessage> = BinanceWebsocket::new(&[
         listen_key.listen_key.as_str(),
         "ethusdt@aggTrade",
         "solusdt@bookTicker",

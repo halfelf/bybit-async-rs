@@ -1,4 +1,4 @@
-use crate::model::Product;
+use crate::models::Product;
 
 use reqwest::Method;
 

@@ -1,14 +1,14 @@
 [package]
-authors = ["Flavio Oliveira <flavio@wisespace.io>", "Weiyuan Wu <weiyuan@crows.land>"]
+authors = ["Weiyuan Wu <weiyuan@crows.land>"]
 description = "Rust Library for the Binance API (Async)"
 documentation = "https://docs.rs/crate/binance-async"
 edition = "2018"
 keywords = ["cryptocurrency", "trading", "binance", "async"]
-license = "MIT OR Apache-2.0"
+license = "MIT"
 name = "binance-async"
 readme = "README.md"
 repository = "https://github.com/dovahcrow/binance-async-rs"
-version = "0.2.0"
+version = "0.3.0"
 
 [features]
 print-response = []

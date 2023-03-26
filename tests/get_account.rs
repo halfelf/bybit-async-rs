@@ -3,7 +3,7 @@ use binance_async::{rest::spot, Binance};
 use fehler::throws;
 use std::env::var;
 
-#[throws(BinanceError)]
+#[throws(Error)]
 #[tokio::test]
 async fn get_account() {
     env_logger::init();

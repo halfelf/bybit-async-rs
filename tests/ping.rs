@@ -2,7 +2,7 @@ use anyhow::Error;
 use binance_async::{rest::spot, Binance};
 use fehler::throws;
 
-#[throws(BinanceError)]
+#[throws(Error)]
 #[tokio::test]
 async fn ping() {
     env_logger::init();
