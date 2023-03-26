@@ -1,17 +1,11 @@
-mod account;
-mod market;
+mod spot;
 mod usdm;
 
-pub use self::{
-    account::{GetAccountRequest, OrderRequest},
-    market::PingRequest,
-    usdm::*,
-};
+pub use self::{spot::*, usdm::*};
 use crate::{
     config::Config,
     error::{BinanceError::*, BinanceResponse},
     model::Product,
-    websocket::{BinanceWebsocket, WebsocketMessage},
 };
 use anyhow::Error;
 use chrono::Utc;
@@ -25,8 +19,6 @@ use reqwest::{
 };
 use serde::{de::DeserializeOwned, Serialize};
 use sha2::Sha256;
-use tokio_tungstenite::connect_async;
-use url::Url;
 
 pub trait Request: Serialize {
     const PRODUCT: Product;
@@ -138,45 +130,6 @@ impl Binance {
             .await?;
 
         self.handle_response(resp).await?
-    }
-
-    #[throws(Error)]
-    pub async fn subscribe<I, S, M>(&self, topics: I) -> BinanceWebsocket<M>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-        M: WebsocketMessage,
-    {
-        let mut combined = String::new();
-        for topic in topics {
-            if !combined.is_empty() {
-                combined.push('/');
-            }
-
-            combined.push_str(topic.as_ref())
-        }
-
-        if combined.is_empty() {
-            throw!(EmptyTopics)
-        }
-
-        let base = match M::PRODUCT {
-            Product::Spot => &self.config.ws_endpoint,
-            Product::UsdMFutures => &self.config.usdm_futures_ws_endpoint,
-            Product::CoinMFutures => &self.config.coinm_futures_ws_endpoint,
-            Product::EuropeanOptions => &self.config.european_options_ws_endpoint,
-        };
-        let endpoint = Url::parse(&format!("{}/stream?streams={}", base, combined)).unwrap();
-        debug!("ws endpoint: {endpoint:?}");
-        let (stream, _) = match connect_async(endpoint).await {
-            Ok(v) => v,
-            Err(tungstenite::Error::Http(ref http)) => throw!(StartWebsocketError(
-                http.status(),
-                String::from_utf8_lossy(http.body().as_deref().unwrap_or_default()).to_string()
-            )),
-            Err(e) => throw!(e),
-        };
-        BinanceWebsocket::new(stream)
     }
 
     #[throws(Error)]

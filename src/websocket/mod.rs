@@ -6,9 +6,12 @@ mod usdm;
 pub use self::{
     coinm::CoinMWebsocketMessage, models::*, spot::SpotWebsocketMessage, usdm::UsdMWebsocketMessage,
 };
-use crate::model::Product;
+use crate::{error::BinanceError::*, model::Product, Config};
 use anyhow::Error;
+use fehler::{throw, throws};
 use futures::{stream::Stream, StreamExt};
+use log::debug;
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, value::RawValue};
 use std::{
@@ -17,7 +20,7 @@ use std::{
     task::{Context, Poll},
 };
 use tokio::net::TcpStream;
-use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
+use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
@@ -33,8 +36,55 @@ pub struct BinanceWebsocket<M> {
     _phantom: PhantomData<M>,
 }
 
-impl<M> BinanceWebsocket<M> {
-    pub fn new(stream: WSStream) -> Self {
+impl<M> BinanceWebsocket<M>
+where
+    M: WebsocketMessage,
+{
+    #[throws(Error)]
+    pub async fn new<I, S>(topics: I) -> BinanceWebsocket<M>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let config = Config::default();
+        Self::with_config(&config, topics).await?
+    }
+
+    #[throws(Error)]
+    pub async fn with_config<I, S>(config: &Config, topics: I) -> BinanceWebsocket<M>
+    where
+        I: IntoIterator<Item = S>,
+        S: AsRef<str>,
+    {
+        let mut combined = String::new();
+        for topic in topics {
+            if !combined.is_empty() {
+                combined.push('/');
+            }
+
+            combined.push_str(topic.as_ref())
+        }
+
+        if combined.is_empty() {
+            throw!(EmptyTopics)
+        }
+
+        let base = match M::PRODUCT {
+            Product::Spot => &config.ws_endpoint,
+            Product::UsdMFutures => &config.usdm_futures_ws_endpoint,
+            Product::CoinMFutures => &config.coinm_futures_ws_endpoint,
+            Product::EuropeanOptions => &config.european_options_ws_endpoint,
+        };
+        let endpoint = Url::parse(&format!("{}/stream?streams={}", base, combined)).unwrap();
+        debug!("ws endpoint: {endpoint:?}");
+        let (stream, _) = match connect_async(endpoint).await {
+            Ok(v) => v,
+            Err(tungstenite::Error::Http(ref http)) => throw!(StartWebsocketError(
+                http.status(),
+                String::from_utf8_lossy(http.body().as_deref().unwrap_or_default()).to_string()
+            )),
+            Err(e) => throw!(e),
+        };
         Self {
             stream,
             _phantom: PhantomData,

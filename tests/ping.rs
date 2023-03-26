@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::PingRequest, Binance};
+use binance_async::{rest::PingSpotRequest, Binance};
 use fehler::throws;
 
 #[throws(Error)]
@@ -8,6 +8,6 @@ async fn ping() {
     env_logger::init();
 
     let binance = Binance::new();
-    let ai = binance.request(PingRequest {}).await?;
+    let ai = binance.request(PingSpotRequest {}).await?;
     println!("{ai:?}");
 }

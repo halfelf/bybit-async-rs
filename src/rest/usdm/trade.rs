@@ -5,7 +5,7 @@ use reqwest::Method;
 use rust_decimal::Decimal;
 
 crate::define_request! {
-    Name => NewOrder;
+    Name => NewOrderUsdM;
     Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/order";
     Method => Method::POST;
@@ -30,7 +30,7 @@ crate::define_request! {
 }
 
 crate::define_request! {
-    Name => CancelOrder;
+    Name => CancelOrderUsdM;
     Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/batchOrders";
     Method => Method::DELETE;
@@ -44,7 +44,7 @@ crate::define_request! {
 }
 
 crate::define_request! {
-    Name => CancelMultipleOrders;
+    Name => CancelMultipleOrdersUsdM;
     Product => Product::UsdMFutures;
     Endpoint => "/fapi/v1/batchOrders";
     Method => Method::DELETE;

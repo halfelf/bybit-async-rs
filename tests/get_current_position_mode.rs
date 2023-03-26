@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::GetCurrentPositionModeRequest, Binance};
+use binance_async::{rest::GetCurrentPositionModeUsdMRequest, Binance};
 use fehler::throws;
 use std::env::var;
 
@@ -9,6 +9,8 @@ async fn get_current_position_mode() {
     env_logger::init();
 
     let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let ai = binance.request(GetCurrentPositionModeRequest {}).await?;
+    let ai = binance
+        .request(GetCurrentPositionModeUsdMRequest {})
+        .await?;
     println!("{ai:?}");
 }
