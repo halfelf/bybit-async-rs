@@ -3,7 +3,7 @@ use reqwest::Method;
 use rust_decimal::Decimal;
 
 crate::define_request! {
-    Name => GetAccountSpot;
+    Name => GetAccount;
     Product => Product::Spot;
     Endpoint => "/api/v3/account";
     Method => Method::GET;
@@ -13,7 +13,7 @@ crate::define_request! {
 }
 
 crate::define_request! {
-    Name => OrderSpot;
+    Name => Order;
     Product => Product::Spot;
     Endpoint => "/api/v3/order";
     Method => Method::GET;

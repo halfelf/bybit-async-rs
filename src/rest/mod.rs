@@ -1,13 +1,14 @@
-mod spot;
-mod usdm;
+pub mod spot;
+pub mod usdm;
 
-pub use self::{spot::*, usdm::*};
 use crate::{
     config::Config,
-    error::{BinanceError::*, BinanceResponse},
+    error::{
+        BinanceError::{self, *},
+        BinanceResponse,
+    },
     model::Product,
 };
-use anyhow::Error;
 use chrono::Utc;
 use fehler::{throw, throws};
 use hex::encode as hexify;
@@ -64,7 +65,7 @@ impl Binance {
         self.config = config;
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     pub async fn request<R>(&self, req: R) -> R::Response
     where
         R: Request,
@@ -121,6 +122,8 @@ impl Binance {
             );
         }
 
+        debug!("[REST] url: {url}, body: {body}");
+
         let resp = self
             .client
             .request(R::METHOD, url.as_str())
@@ -132,7 +135,7 @@ impl Binance {
         self.handle_response(resp).await?
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     fn signature(&self, params: &str, body: &str) -> String {
         let secret = match &self.secret {
             Some(s) => s,
@@ -147,7 +150,7 @@ impl Binance {
         signature
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> O {
         let resp: BinanceResponse<O> = if cfg!(feature = "print-response") {
             use serde_json::from_str;
@@ -164,11 +167,10 @@ impl Binance {
 #[cfg(test)]
 mod test {
     use super::Binance;
-    use anyhow::Error;
     use fehler::throws;
     use url::{form_urlencoded::Serializer, Url};
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     #[test]
     fn signature_query() {
         let tr = Binance::with_key_and_secret(
@@ -199,7 +201,7 @@ mod test {
         );
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     #[test]
     fn signature_body() {
         let tr = Binance::with_key_and_secret(
@@ -230,7 +232,7 @@ mod test {
         );
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     #[test]
     fn signature_query_body() {
         let tr = Binance::with_key_and_secret(
@@ -266,7 +268,7 @@ mod test {
         );
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     #[test]
     fn signature_body2() {
         let tr = Binance::with_key_and_secret(

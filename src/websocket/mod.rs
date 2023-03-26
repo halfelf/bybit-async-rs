@@ -6,8 +6,11 @@ mod usdm;
 pub use self::{
     coinm::CoinMWebsocketMessage, models::*, spot::SpotWebsocketMessage, usdm::UsdMWebsocketMessage,
 };
-use crate::{error::BinanceError::*, model::Product, Config};
-use anyhow::Error;
+use crate::{
+    error::BinanceError::{self, *},
+    model::Product,
+    Config,
+};
 use fehler::{throw, throws};
 use futures::{stream::Stream, StreamExt};
 use log::debug;
@@ -28,7 +31,7 @@ type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 pub trait WebsocketMessage: Sized {
     const PRODUCT: Product;
 
-    fn parse(stream: &str, data: &str) -> Result<Self, Error>;
+    fn parse(stream: &str, data: &str) -> Result<Self, BinanceError>;
 }
 
 pub struct BinanceWebsocket<M> {
@@ -40,7 +43,7 @@ impl<M> BinanceWebsocket<M>
 where
     M: WebsocketMessage,
 {
-    #[throws(Error)]
+    #[throws(BinanceError)]
     pub async fn new<I, S>(topics: I) -> BinanceWebsocket<M>
     where
         I: IntoIterator<Item = S>,
@@ -50,7 +53,7 @@ where
         Self::with_config(&config, topics).await?
     }
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     pub async fn with_config<I, S>(config: &Config, topics: I) -> BinanceWebsocket<M>
     where
         I: IntoIterator<Item = S>,
@@ -103,7 +106,7 @@ impl<M> Stream for BinanceWebsocket<M>
 where
     M: WebsocketMessage + Unpin + std::fmt::Debug,
 {
-    type Item = Result<M, Error>;
+    type Item = Result<M, BinanceError>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
         let c = match self.stream.poll_next_unpin(cx) {

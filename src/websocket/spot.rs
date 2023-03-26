@@ -1,5 +1,8 @@
-use crate::{error::BinanceError::*, model::Product, websocket::WebsocketMessage};
-use anyhow::Error;
+use crate::{
+    error::BinanceError::{self, *},
+    model::Product,
+    websocket::WebsocketMessage,
+};
 use fehler::{throw, throws};
 use serde::Serialize;
 use serde_json::from_str;
@@ -14,7 +17,7 @@ pub enum SpotWebsocketMessage {
 impl WebsocketMessage for SpotWebsocketMessage {
     const PRODUCT: Product = Product::Spot;
 
-    #[throws(Error)]
+    #[throws(BinanceError)]
     fn parse(stream: &str, data: &str) -> Self {
         if stream.ends_with("@aggTrade") {
             let value: AggregateTrade = from_str(data)?;
@@ -35,7 +38,7 @@ impl WebsocketMessage for SpotWebsocketMessage {
             throw!(StreamNotImplemented(stream.into()))
         } else if stream == "!ticker@arr" {
             throw!(StreamNotImplemented(stream.into()))
-        } else if stream.ends_with("bookTicker") {
+        } else if stream.ends_with("@bookTicker") {
             throw!(StreamNotImplemented(stream.into()))
         } else if stream == "!bookTicker" {
             throw!(StreamNotImplemented(stream.into()))

@@ -1,12 +1,11 @@
-use std::time::Duration;
-
 use anyhow::Error;
 use binance_async::websocket::{BinanceWebsocket, SpotWebsocketMessage};
 use fehler::throws;
 use futures::StreamExt;
+use std::time::Duration;
 use tokio::time::timeout;
 
-#[throws(Error)]
+#[throws(BinanceError)]
 #[tokio::test]
 async fn ws_aggtrade() {
     env_logger::init();

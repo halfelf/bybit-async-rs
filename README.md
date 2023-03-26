@@ -11,6 +11,10 @@ Unofficial Rust Library for the [Binance API](https://github.com/binance-exchang
 
 This library borrows code from Flavio Oliveira (wisespace-io)'s [work](https://github.com/wisespace-io/binance-rs). Thanks for his excellent library!
 
+This repo is at its early stage, not all requests/websockets are implemented.
+However, the related mechanism is already there, adding support for new requests/websocket events
+should only require [several lines of code](#missing-endpoints-you-can-add-it-easily). PRs are very welcomed!
+
 ## Risk Warning
 
 It is a personal project, use at your own risk. I will not be responsible for your investment losses.
@@ -32,6 +36,8 @@ binance-async = 0.2
 ```
 
 Examples located in the examples folder.
+* `examples/websocket.rs`: websocket subscribing market data and user data.
+* `examples/new_order_and_cancel.rs`: create a new order than then cancel it.
 
 ## Ergonomic Design
 

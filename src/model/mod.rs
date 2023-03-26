@@ -431,17 +431,25 @@ pub enum Side {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+#[serde(rename_all = "UPPERCASE")]
 pub enum TimeInForce {
     GTC,
     IOC,
     FOK,
+    GTX,
 }
 
 impl Default for TimeInForce {
     fn default() -> Self {
         Self::GTC
     }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum NewOrderResponseType {
+    Ack,
+    Result,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -466,4 +474,25 @@ pub enum OrderStatus {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum OrderRejectReason {
     None,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ExecutionType {
+    /// The order has been accepted into the engine.
+    New,
+    /// The order has been canceled by the user.
+    Canceled,
+    /// Liquidation Execution (Futures only)
+    Calculated,
+    /// (currently unused)
+    Replaced,
+    /// The order has been rejected and was not processed (This message appears only with Cancel Replace Orders wherein the new order placement is rejected but the request to cancel request succeeds.)
+    Rejected,
+    /// Part of the order or all of the order's quantity has filled.
+    Trade,
+    /// The order was canceled according to the order type's rules (e.g. LIMIT FOK orders with no fill, LIMIT IOC or MARKET orders that partially fill) or by the exchange, (e.g. orders canceled during liquidation, orders canceled during maintenance).
+    Expired,
+    /// The order has expired due to STP trigger.
+    TradePrevention,
 }
