@@ -1,3 +1,4 @@
+pub mod coinm;
 pub mod spot;
 pub mod usdm;
 
@@ -154,8 +155,9 @@ impl Binance {
     async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> O {
         let resp: BinanceResponse<O> = if cfg!(feature = "print-response") {
             use serde_json::from_str;
+            let status = resp.status();
             let body = resp.text().await?;
-            debug!("Response is {body}");
+            debug!("Response is {status} {body}");
             from_str(&body)?
         } else {
             resp.json().await?
