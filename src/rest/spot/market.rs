@@ -5,8 +5,8 @@ use reqwest::Method;
 crate::define_request! {
     Name => Ping;
     Product => Product::Spot;
-    Endpoint => "/api/v3/ping";
     Method => Method::GET;
+    Endpoint => "/api/v3/ping";
     Signed => false;
     Request => {};
     Response => {};

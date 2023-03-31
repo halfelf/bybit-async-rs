@@ -5,8 +5,8 @@ use rust_decimal::Decimal;
 crate::define_request! {
     Name => GetAccount;
     Product => Product::Spot;
-    Endpoint => "/api/v3/account";
     Method => Method::GET;
+    Endpoint => "/api/v3/account";
     Signed => true;
     Request => {};
     Response => AccountInformation;
@@ -15,8 +15,8 @@ crate::define_request! {
 crate::define_request! {
     Name => Order;
     Product => Product::Spot;
-    Endpoint => "/api/v3/order";
     Method => Method::GET;
+    Endpoint => "/api/v3/order";
     Signed => true;
     Request => {
         pub symbol: String,

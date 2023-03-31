@@ -3,8 +3,8 @@ macro_rules! define_request {
     (
         Name => $name: ident;
         Product => $product: expr;
-        Endpoint => $endpoint: expr;
         Method => $method: expr;
+        Endpoint => $endpoint: expr;
         Signed => $signed: expr;
         Request => { $($req_def:tt)* };
         Response => { $($resp_def:tt)* };
@@ -12,8 +12,8 @@ macro_rules! define_request {
         crate::define_request! {
             Name => $name;
             Product => $product;
-            Endpoint => $endpoint;
             Method => $method;
+            Endpoint => $endpoint;
             Keyed => false;
             Signed => $signed;
             Request => { $($req_def)* };
@@ -23,8 +23,8 @@ macro_rules! define_request {
     (
         Name => $name: ident;
         Product => $product: expr;
-        Endpoint => $endpoint: expr;
         Method => $method: expr;
+        Endpoint => $endpoint: expr;
         Keyed => $keyed: expr;
         Signed => $signed: expr;
         Request => { $($req_def:tt)* };
@@ -57,8 +57,8 @@ macro_rules! define_request {
     (
         Name => $name: ident;
         Product => $product: expr;
-        Endpoint => $endpoint: expr;
         Method => $method: expr;
+        Endpoint => $endpoint: expr;
         Signed => $signed: expr;
         Request => { $($req_def:tt)* };
         Response => $resp_ty: ty;
@@ -66,8 +66,8 @@ macro_rules! define_request {
         crate::define_request! {
             Name => $name;
             Product => $product;
-            Endpoint => $endpoint;
             Method => $method;
+            Endpoint => $endpoint;
             Keyed => false;
             Signed => $signed;
             Request => { $($req_def)* };
@@ -77,8 +77,8 @@ macro_rules! define_request {
     (
         Name => $name: ident;
         Product => $product: expr;
-        Endpoint => $endpoint: expr;
         Method => $method: expr;
+        Endpoint => $endpoint: expr;
         Keyed => $keyed: expr;
         Signed => $signed: expr;
         Request => { $($req_def:tt)* };

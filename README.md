@@ -46,7 +46,7 @@ For example, to make a new order, you need to fill the `OrderRequest` struct, wh
 is defined as:
 ```rust
 #[derive(Debug, Clone, Default, Deserialize, Serialize)]
-pub struct OrderRequest {
+pub struct NewOrderRequest {
     pub symbol: String,
     pub qty: Decimal,
     pub price: Decimal,
@@ -59,7 +59,7 @@ pub struct OrderRequest {
 ```
 You can just fill in the fields you want to fill, and leave the rest to `Default`. e.g.
 ```rust
-let req = OrderRequest {
+let req = NewOrderRequest {
     symbol: "btcusd".into(),
     qty: 3.try_into().unwrap(),
     price: 20000.try_into().unwrap(),
@@ -76,7 +76,7 @@ combinations.
 The magic behind the convenience is the `Request` trait. For example, `OrderRequest`
 has the `Request` implemented as:
 ```rust
-impl Request for OrderRequest {
+impl Request for NewOrderRequest {
     const API: APIUrl = APIUrl::Spot;
     const ENDPOINT: &'static str = "/api/v3/order";
     const METHOD: Method = Method::POST;
@@ -122,8 +122,8 @@ Or, to make it simpler, use the macro ([see in action](https://github.com/dovahc
 crate::define_request! {
     Name => GetCurrentPositionMode;
     Product => Product::UsdMFutures;
-    Endpoint => "/fapi/v1/positionSide/dual";
     Method => Method::GET;
+    Endpoint => "/fapi/v1/positionSide/dual";
     Signed => true;
     Request => {};
     Response => {

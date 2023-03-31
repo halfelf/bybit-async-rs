@@ -4,8 +4,8 @@ use reqwest::Method;
 crate::define_request! {
     Name => GetCurrentPositionMode;
     Product => Product::UsdMFutures;
-    Endpoint => "/fapi/v1/positionSide/dual";
     Method => Method::GET;
+    Endpoint => "/fapi/v1/positionSide/dual";
     Signed => true;
     Request => {};
     Response => {

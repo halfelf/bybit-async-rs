@@ -4,8 +4,8 @@ use reqwest::Method;
 crate::define_request! {
     Name => StartUserDataStream;
     Product => Product::UsdMFutures;
-    Endpoint => "/fapi/v1/listenKey";
     Method => Method::POST;
+    Endpoint => "/fapi/v1/listenKey";
     Keyed => true;
     Signed => false;
     Request => {};
@@ -17,8 +17,8 @@ crate::define_request! {
 crate::define_request! {
     Name => KeepaliveUserDataStream;
     Product => Product::UsdMFutures;
-    Endpoint => "/fapi/v1/listenKey";
     Method => Method::PUT;
+    Endpoint => "/fapi/v1/listenKey";
     Keyed => true;
     Signed => false;
     Request => {};
@@ -28,8 +28,8 @@ crate::define_request! {
 crate::define_request! {
     Name => CloseUserDataStream;
     Product => Product::UsdMFutures;
-    Endpoint => "/fapi/v1/listenKey";
     Method => Method::DELETE;
+    Endpoint => "/fapi/v1/listenKey";
     Keyed => true;
     Signed => false;
     Request => {};
