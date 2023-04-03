@@ -9,8 +9,9 @@ async fn get_current_position_mode() {
     env_logger::init();
 
     let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let ai = binance
+    let resp = binance
         .request(usdm::GetCurrentPositionModeRequest {})
         .await?;
-    println!("{ai:?}");
+    let resp = &*resp;
+    println!("{resp:?}");
 }

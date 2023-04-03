@@ -2,8 +2,10 @@ use crate::models::{
     CancelOrderResponse, CanceledOrder, NewOrderResponse, NewOrderResponseType, OrderSide,
     OrderType, PositionSide, Product, TimeInForce, WorkingType,
 };
+use fehler::throw;
 use reqwest::Method;
 use rust_decimal::Decimal;
+use serde::{Deserialize, Deserializer};
 
 crate::define_request! {
     Name => NewOrder;
@@ -69,5 +71,23 @@ crate::define_request! {
     Request => {
         pub symbol: String,
     };
-    Response => Vec<CanceledOrder>;
+    Response => CancelAllOpenOrdersResponse;
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct CancelAllOpenOrdersResponse {
+    #[serde(deserialize_with = "check")]
+    pub code: u64,
+    pub msg: String,
+}
+
+pub fn check<'de, D>(d: D) -> Result<u64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let v = u64::deserialize(d)?;
+    if v != 200 {
+        throw!(serde::de::Error::custom("not success code"))
+    }
+    Ok(v)
 }

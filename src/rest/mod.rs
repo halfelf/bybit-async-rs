@@ -4,23 +4,26 @@ pub mod usdm;
 
 use crate::{
     config::Config,
-    error::{
-        BinanceError::{self, *},
-        BinanceResponse,
-    },
+    error::BinanceError::{self, *},
     models::Product,
+    BinanceResponseError,
 };
 use chrono::Utc;
 use fehler::{throw, throws};
 use hex::encode as hexify;
 use hmac::{Hmac, Mac};
 use log::{debug, trace};
+#[cfg(feature = "zero-copy")]
+use owning_ref::OwningHandle;
 use reqwest::{
     header::{HeaderMap, HeaderName, HeaderValue, CONTENT_TYPE, USER_AGENT},
     Client, Method, Response,
 };
 use serde::{de::DeserializeOwned, Serialize};
+use serde_json::from_str;
 use sha2::Sha256;
+#[cfg(feature = "zero-copy")]
+use std::ops::Deref;
 
 pub trait Request: Serialize {
     const PRODUCT: Product;
@@ -67,7 +70,7 @@ impl Binance {
     }
 
     #[throws(BinanceError)]
-    pub async fn request<R>(&self, req: R) -> R::Response
+    pub async fn request<R>(&self, req: R) -> RestResponse<R::Response>
     where
         R: Request,
     {
@@ -151,20 +154,64 @@ impl Binance {
         signature
     }
 
+    #[cfg(not(feature = "zero-copy"))]
     #[throws(BinanceError)]
-    async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> O {
-        let resp: BinanceResponse<O> = if cfg!(feature = "print-response") {
-            use serde_json::from_str;
-            let status = resp.status();
-            let body = resp.text().await?;
+    async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> RestResponse<O> {
+        let status = resp.status();
+        let body = resp.text().await?;
+
+        if cfg!(feature = "print-response") {
             debug!("Response is {status} {body}");
-            from_str(&body)?
-        } else {
-            resp.json().await?
         };
-        resp.to_result()?
+
+        match from_str(&body) {
+            Ok(v) => v,
+            Err(e) => match from_str::<BinanceResponseError>(&body) {
+                Ok(e) => throw!(e),
+                Err(_) => throw!(e),
+            },
+        }
+    }
+
+    #[cfg(feature = "zero-copy")]
+    #[throws(BinanceError)]
+    async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> RestResponse<O> {
+        let status = resp.status();
+        let body = resp.text().await?;
+
+        if cfg!(feature = "print-response") {
+            debug!("Response is {status} {body}");
+        };
+
+        OwningHandle::try_new(body, |body| -> Result<_, BinanceError> {
+            let body = unsafe { &*body };
+            match from_str(body) {
+                Ok(v) => Ok(C(v)),
+                Err(e) => match from_str::<BinanceResponseError>(&body) {
+                    Ok(e) => throw!(e),
+                    Err(_) => throw!(e),
+                },
+            }
+        })?
     }
 }
+
+#[cfg(feature = "zero-copy")]
+#[derive(Clone, Copy, Debug)]
+#[repr(transparent)]
+pub struct C<T>(pub T);
+#[cfg(feature = "zero-copy")]
+impl<T> Deref for C<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+#[cfg(feature = "zero-copy")]
+pub type RestResponse<O> = OwningHandle<String, C<O>>;
+
+#[cfg(not(feature = "zero-copy"))]
+pub type RestResponse<O> = O;
 
 #[cfg(test)]
 mod test {

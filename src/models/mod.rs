@@ -1,8 +1,7 @@
 mod market;
 mod order;
 
-pub use self::market::*;
-pub use self::order::*;
+pub use self::{market::*, order::*};
 use crate::parser::string_or_decimal;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};

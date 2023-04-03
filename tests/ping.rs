@@ -8,6 +8,7 @@ async fn ping() {
     env_logger::init();
 
     let binance = Binance::new();
-    let ai = binance.request(spot::PingRequest {}).await?;
-    println!("{ai:?}");
+    let resp = binance.request(spot::PingRequest {}).await?;
+    let resp = &*resp;
+    println!("{resp:?}");
 }

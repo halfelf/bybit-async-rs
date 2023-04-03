@@ -103,6 +103,8 @@ pub mod rest;
 pub mod websocket;
 
 pub use config::Config;
-pub use error::{BinanceError, BinanceResponse, BinanceResponseError};
-pub use rest::Binance;
+pub use error::{BinanceError, BinanceResponseError};
+#[cfg(feature = "zero-copy")]
+pub use rest::C;
+pub use rest::{Binance, RestResponse};
 pub use websocket::BinanceWebsocket;

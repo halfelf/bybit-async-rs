@@ -8,6 +8,7 @@ async fn exchange_information() {
     env_logger::init();
 
     let binance = Binance::new();
-    let ai = binance.request(usdm::ExchangeInformationRequest {}).await?;
-    println!("{ai:?}");
+    let resp = binance.request(usdm::ExchangeInformationRequest {}).await?;
+    let resp = &*resp;
+    println!("{resp:?}");
 }

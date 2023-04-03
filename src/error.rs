@@ -8,22 +8,6 @@ pub struct BinanceResponseError {
     pub msg: String,
 }
 
-#[derive(Deserialize, Debug, Clone)]
-#[serde(untagged)]
-pub enum BinanceResponse<T> {
-    Success(T),
-    Error(BinanceResponseError),
-}
-
-impl<T: for<'a> Deserialize<'a>> BinanceResponse<T> {
-    pub fn to_result(self) -> Result<T, BinanceResponseError> {
-        match self {
-            BinanceResponse::Success(t) => Ok(t),
-            BinanceResponse::Error(e) => Err(e),
-        }
-    }
-}
-
 #[derive(Debug, Error)]
 pub enum BinanceError {
     #[error("No Api key set for private api")]
