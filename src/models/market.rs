@@ -1,3 +1,5 @@
+use crate::parser::{string_or_decimal, string_or_decimal_opt};
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
@@ -54,46 +56,62 @@ pub enum Filter {
     #[serde(rename = "PRICE_FILTER")]
     #[serde(rename_all = "camelCase")]
     PriceFilter {
-        min_price: String,
-        max_price: String,
-        tick_size: String,
+        #[serde(with = "string_or_decimal")]
+        min_price: Decimal,
+        #[serde(with = "string_or_decimal")]
+        max_price: Decimal,
+        #[serde(with = "string_or_decimal")]
+        tick_size: Decimal,
     },
     #[serde(rename = "PERCENT_PRICE")]
     #[serde(rename_all = "camelCase")]
     PercentPrice {
-        multiplier_up: String,
-        multiplier_down: String,
+        #[serde(with = "string_or_decimal")]
+        multiplier_up: Decimal,
+        #[serde(with = "string_or_decimal")]
+        multiplier_down: Decimal,
         avg_price_mins: Option<f64>,
     },
     #[serde(rename = "PERCENT_PRICE_BY_SIDE")]
     #[serde(rename_all = "camelCase")]
     PercentPriceBySide {
-        bid_multiplier_up: String,
-        bid_multiplier_down: String,
-        ask_multiplier_up: String,
-        ask_multiplier_down: String,
+        #[serde(with = "string_or_decimal")]
+        bid_multiplier_up: Decimal,
+        #[serde(with = "string_or_decimal")]
+        bid_multiplier_down: Decimal,
+        #[serde(with = "string_or_decimal")]
+        ask_multiplier_up: Decimal,
+        #[serde(with = "string_or_decimal")]
+        ask_multiplier_down: Decimal,
         avg_price_mins: Option<f64>,
     },
     #[serde(rename = "LOT_SIZE")]
     #[serde(rename_all = "camelCase")]
     LotSize {
-        min_qty: String,
-        max_qty: String,
-        step_size: String,
+        #[serde(with = "string_or_decimal")]
+        min_qty: Decimal,
+        #[serde(with = "string_or_decimal")]
+        max_qty: Decimal,
+        #[serde(with = "string_or_decimal")]
+        step_size: Decimal,
     },
     #[serde(rename = "MIN_NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     MinNotional {
-        notional: Option<String>,
-        min_notional: Option<String>,
+        #[serde(with = "string_or_decimal_opt")]
+        notional: Option<Decimal>,
+        #[serde(with = "string_or_decimal_opt")]
+        min_notional: Option<Decimal>,
         apply_to_market: Option<bool>,
         avg_price_mins: Option<f64>,
     },
     #[serde(rename = "NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     Notional {
-        notional: Option<String>,
-        min_notional: Option<String>,
+        #[serde(with = "string_or_decimal_opt")]
+        notional: Option<Decimal>,
+        #[serde(with = "string_or_decimal_opt")]
+        min_notional: Option<Decimal>,
         apply_to_market: Option<bool>,
         avg_price_mins: Option<f64>,
     },
@@ -115,9 +133,12 @@ pub enum Filter {
     #[serde(rename = "MARKET_LOT_SIZE")]
     #[serde(rename_all = "camelCase")]
     MarketLotSize {
-        min_qty: String,
-        max_qty: String,
-        step_size: String,
+        #[serde(with = "string_or_decimal")]
+        min_qty: Decimal,
+        #[serde(with = "string_or_decimal")]
+        max_qty: Decimal,
+        #[serde(with = "string_or_decimal")]
+        step_size: Decimal,
     },
     #[serde(rename = "TRAILING_DELTA")]
     #[serde(rename_all = "camelCase")]
