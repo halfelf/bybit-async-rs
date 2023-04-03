@@ -1,4 +1,4 @@
-use crate::models::{NewOrderResponse, OrderSide, Product};
+use crate::models::{spot::NewOrderResponse, Product, Side};
 use reqwest::Method;
 use rust_decimal::Decimal;
 
@@ -13,7 +13,7 @@ crate::define_request! {
         pub orig_client_order_id: Option<String>,
 
         pub symbol: String,
-        pub side: OrderSide,
+        pub side: Side,
         pub quantity: Option<Decimal>,
         pub price: Option<Decimal>,
     };

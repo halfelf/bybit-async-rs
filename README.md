@@ -51,7 +51,7 @@ pub struct NewOrderRequest {
     pub qty: Decimal,
     pub price: Decimal,
     pub stop_price: Option<Decimal>,
-    pub order_side: OrderSide,
+    pub order_side: Side,
     pub order_type: OrderType,
     pub time_in_force: TimeInForce,
     pub new_client_order_id: Option<String>,

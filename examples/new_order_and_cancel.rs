@@ -1,6 +1,6 @@
 use anyhow::Error;
 use binance_async::{
-    models::{OrderSide, OrderType, TimeInForce},
+    models::{OrderType, Side, TimeInForce},
     rest::usdm,
     Binance,
 };
@@ -18,7 +18,7 @@ async fn main() {
         .request(usdm::NewOrderRequest {
             symbol: "ethusdt".into(),
             r#type: OrderType::Limit,
-            side: OrderSide::Buy,
+            side: Side::Buy,
 
             price: Decimal::from_f64(1500.),
             quantity: Decimal::from_f64(0.004),

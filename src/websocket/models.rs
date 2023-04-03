@@ -1,7 +1,7 @@
 use crate::{
     models::{
-        Asks, Bids, Kline, OrderExecType, OrderRejectReason, OrderStatus, OrderType, Side,
-        TimeInForce,
+        spot::{Asks, Bids, Kline, OrderExecType, OrderRejectReason},
+        OrderStatus, OrderType, Side, TimeInForce,
     },
     parser::string_or_decimal,
 };

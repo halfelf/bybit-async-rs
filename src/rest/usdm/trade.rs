@@ -1,6 +1,8 @@
 use crate::models::{
-    CancelOrderResponse, CanceledOrder, NewOrderResponse, NewOrderResponseType, OrderSide,
-    OrderType, PositionSide, Product, TimeInForce, WorkingType,
+    spot::{CancelOrderResponse, CanceledOrder, NewOrderResponse, NewOrderResponseType},
+    usdm::PositionSide,
+    usdm::WorkingType,
+    OrderType, Product, Side, TimeInForce,
 };
 use fehler::throw;
 use reqwest::Method;
@@ -15,7 +17,7 @@ crate::define_request! {
     Signed => true;
     Request => {
         pub symbol: String,
-        pub side: OrderSide,
+        pub side: Side,
         pub position_side: Option<PositionSide>,
         pub r#type: OrderType,
         pub time_in_force: Option<TimeInForce>,

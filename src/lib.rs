@@ -19,7 +19,7 @@
 //! binance.request(usdm::NewOrderRequest {
 //!     symbol: "ethusdt".into(),
 //!     r#type: OrderType::Limit,
-//!     side: OrderSide::Buy,
+//!     side: Side::Buy,
 //!
 //!     price: Decimal::from_f64(1500.),
 //!     quantity: Decimal::from_f64(0.004),
@@ -43,7 +43,7 @@
 //!        .request(usdm::NewOrderRequest {
 //!            symbol: "ethusdt".into(),
 //!            r#type: OrderType::Limit,
-//!            side: OrderSide::Buy,
+//!            side: Side::Buy,
 //!
 //!            price: Decimal::from_f64(1500.),
 //!            quantity: Decimal::from_f64(0.004),

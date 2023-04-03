@@ -1,7 +1,7 @@
 use super::AggregateTrade;
 use crate::{
     error::BinanceError::{self, *},
-    models::{ExecutionType, OrderSide, OrderStatus, OrderType, Product, TimeInForce},
+    models::{ExecutionType, OrderStatus, OrderType, Product, Side, TimeInForce},
     parser::{string_or_decimal, string_or_decimal_opt},
     websocket::ParseMessage,
 };
@@ -113,7 +113,7 @@ pub struct OrderUpdate {
     pub new_client_order_id: String,
 
     #[serde(rename = "S")]
-    pub side: OrderSide,
+    pub side: Side,
 
     #[serde(rename = "o")]
     pub order_type: OrderType,

@@ -3,55 +3,6 @@ use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
 /* -------------------------------------------------------------------------- */
-/*                                Common Enums                                */
-/* -------------------------------------------------------------------------- */
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum OrderType {
-    Market,
-    Limit,
-    StopLoss,
-    StopLossLimit,
-    TakeProfit,
-    TakeProfitLimit,
-    LimitMaker,
-}
-
-impl Default for OrderType {
-    fn default() -> Self {
-        OrderType::Market
-    }
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum OrderSide {
-    Buy,
-    Sell,
-}
-
-impl Default for OrderSide {
-    fn default() -> Self {
-        OrderSide::Buy
-    }
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum PositionSide {
-    Both,
-    Long,
-    Short,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum WorkingType {
-    MarkPrice,
-    ContractPrice,
-}
-
-/* -------------------------------------------------------------------------- */
 /*                                   Structs                                  */
 /* -------------------------------------------------------------------------- */
 pub type NewOrderResponse = NewOrder;

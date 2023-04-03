@@ -61,3 +61,34 @@ pub mod string_or_decimal_opt {
         Ok(Some(super::string_or_decimal::deserialize(deserializer)?))
     }
 }
+
+pub mod string_or_bool {
+    use std::fmt;
+
+    use serde::{de, Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        T: fmt::Display,
+        S: Serializer,
+    {
+        serializer.collect_str(value)
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum StringOrFloat {
+            String(String),
+            Bool(bool),
+        }
+
+        match StringOrFloat::deserialize(deserializer)? {
+            StringOrFloat::String(s) => s.parse().map_err(de::Error::custom),
+            StringOrFloat::Bool(i) => Ok(i),
+        }
+    }
+}
