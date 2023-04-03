@@ -83,11 +83,9 @@ pub struct NewOrder {
     #[serde(rename = "type")]
     pub type_name: String,
     pub orig_type: String,
-    #[serde(default)]
-    #[serde(with = "string_or_decimal_opt")]
+    #[serde(default, with = "string_or_decimal_opt")]
     pub activate_price: Option<Decimal>,
-    #[serde(default)]
-    #[serde(with = "string_or_decimal_opt")]
+    #[serde(default, with = "string_or_decimal_opt")]
     pub price_rate: Option<Decimal>,
     pub update_time: u64,
     pub working_type: String,
@@ -166,11 +164,9 @@ pub struct CanceledOrder {
     pub time_in_force: String,
     #[serde(rename = "type")]
     pub type_name: String,
-    #[serde(default)]
-    #[serde(with = "string_or_decimal_opt")]
+    #[serde(default, with = "string_or_decimal_opt")]
     pub activate_price: Option<Decimal>,
-    #[serde(default)]
-    #[serde(with = "string_or_decimal_opt")]
+    #[serde(default, with = "string_or_decimal_opt")]
     pub price_rate: Option<Decimal>,
     pub update_time: u64,
     pub working_type: String,

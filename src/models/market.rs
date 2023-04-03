@@ -98,9 +98,9 @@ pub enum Filter {
     #[serde(rename = "MIN_NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     MinNotional {
-        #[serde(with = "string_or_decimal_opt")]
+        #[serde(default, with = "string_or_decimal_opt")]
         notional: Option<Decimal>,
-        #[serde(with = "string_or_decimal_opt")]
+        #[serde(default, with = "string_or_decimal_opt")]
         min_notional: Option<Decimal>,
         apply_to_market: Option<bool>,
         avg_price_mins: Option<f64>,
@@ -108,9 +108,9 @@ pub enum Filter {
     #[serde(rename = "NOTIONAL")]
     #[serde(rename_all = "camelCase")]
     Notional {
-        #[serde(with = "string_or_decimal_opt")]
+        #[serde(default, with = "string_or_decimal_opt")]
         notional: Option<Decimal>,
-        #[serde(with = "string_or_decimal_opt")]
+        #[serde(default, with = "string_or_decimal_opt")]
         min_notional: Option<Decimal>,
         apply_to_market: Option<bool>,
         avg_price_mins: Option<f64>,
