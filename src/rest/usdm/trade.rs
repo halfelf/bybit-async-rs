@@ -59,3 +59,15 @@ crate::define_request! {
     };
     Response => Vec<CanceledOrder>;
 }
+
+crate::define_request! {
+    Name => CancelAllOpenOrders;
+    Product => Product::UsdMFutures;
+    Method => Method::DELETE;
+    Endpoint => "/fapi/v1/allOpenOrders";
+    Signed => true;
+    Request => {
+        pub symbol: String,
+    };
+    Response => Vec<CanceledOrder>;
+}
