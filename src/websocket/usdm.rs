@@ -16,6 +16,7 @@ pub enum WebsocketMessage {
     // User Data Stream
     UserOrderUpdate(OrderUpdate),
     UserAccountUpdate(AccountUpdate),
+    UserDataStreamExpired,
     // Market Stream
     AggregateTrade(AggregateTrade),
     BookTicker(BookTicker),
@@ -76,6 +77,7 @@ impl ParseMessage for WebsocketMessage {
                 "ORDER_TRADE_UPDATE" => {
                     Self::UserOrderUpdate(value.order.ok_or(EmptyUserDataStream(value.event_type))?)
                 }
+                "listenKeyExpired" => Self::UserDataStreamExpired,
                 _ => throw!(UserDataStreamEventNotImplemented(value.event_type)),
             }
         } else {

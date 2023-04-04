@@ -109,7 +109,7 @@ where
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
         let c = match self.stream.poll_next_unpin(cx) {
             Poll::Ready(Some(Ok(c))) => c,
-            Poll::Ready(Some(Err(e))) => return dbg!(Poll::Ready(Some(Err(e.into())))),
+            Poll::Ready(Some(Err(e))) => return Poll::Ready(Some(Err(e.into()))),
             Poll::Pending => return Poll::Pending,
             Poll::Ready(None) => return Poll::Ready(None),
         };
