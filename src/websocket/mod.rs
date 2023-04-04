@@ -30,6 +30,7 @@ pub trait ParseMessage: Sized {
     const PRODUCT: Product;
 
     fn parse(stream: &str, data: &str) -> Result<Self, BinanceError>;
+    fn ping() -> Self;
 }
 
 pub struct BinanceWebsocket<M> {
@@ -115,9 +116,8 @@ where
         };
         let msg = match c {
             Message::Text(msg) => msg,
-            Message::Binary(_) | Message::Frame(_) | Message::Pong(..) | Message::Ping(..) => {
-                return Poll::Pending
-            }
+            Message::Ping(..) => return Poll::Ready(Some(Ok(M::ping()))),
+            Message::Binary(_) | Message::Frame(_) | Message::Pong(..) => return Poll::Pending,
             Message::Close(_) => return Poll::Ready(None),
         };
 

@@ -11,6 +11,7 @@ use serde_json::from_str;
 #[derive(Debug, Clone, Serialize)]
 #[non_exhaustive]
 pub enum WebsocketMessage {
+    Ping,
     AggregateTrade(AggregateTrade),
 }
 
@@ -57,5 +58,9 @@ impl ParseMessage for WebsocketMessage {
         } else {
             throw!(UnknownStream(stream.into()))
         }
+    }
+
+    fn ping() -> Self {
+        Self::Ping
     }
 }
