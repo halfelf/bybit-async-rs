@@ -9,7 +9,7 @@ use crate::{
     Config,
 };
 use fehler::{throw, throws};
-use futures::{stream::Stream, StreamExt};
+use futures::{stream::Stream, SinkExt, StreamExt};
 use log::debug;
 pub use models::*;
 use reqwest::Url;
@@ -91,6 +91,13 @@ where
             stream,
             _phantom: PhantomData,
         }
+    }
+}
+
+impl<M> BinanceWebsocket<M> {
+    #[throws(BinanceError)]
+    pub async fn pong(&mut self) {
+        self.stream.send(Message::Pong(vec![])).await?
     }
 }
 
