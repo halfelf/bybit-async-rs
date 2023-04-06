@@ -1,6 +1,6 @@
 use crate::models::usdm::{Asset, Position};
 use crate::models::Product;
-use crate::parser::string_or_bool;
+use crate::parser::string_or;
 use crate::parser::string_or_decimal;
 use reqwest::Method;
 use rust_decimal::Decimal;
@@ -27,11 +27,11 @@ crate::define_request! {
     Response => {
         #[serde(with = "string_or_decimal")]
         pub fee_tier: Decimal,
-        #[serde(with = "string_or_bool")]
+        #[serde(with = "string_or")]
         pub can_trade: bool,
-        #[serde(with = "string_or_bool")]
+        #[serde(with = "string_or")]
         pub can_deposit: bool,
-        #[serde(with = "string_or_bool")]
+        #[serde(with = "string_or")]
         pub can_withdraw: bool,
         #[serde(with = "string_or_decimal")]
         pub update_time: Decimal,

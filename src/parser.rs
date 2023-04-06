@@ -62,10 +62,9 @@ pub mod string_or_decimal_opt {
     }
 }
 
-pub mod string_or_bool {
-    use std::fmt;
-
+pub mod string_or {
     use serde::{de, Deserialize, Deserializer, Serializer};
+    use std::{fmt, str::FromStr};
 
     pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -75,20 +74,22 @@ pub mod string_or_bool {
         serializer.collect_str(value)
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<bool, D::Error>
+    pub fn deserialize<'de, D, T>(deserializer: D) -> Result<T, D::Error>
     where
         D: Deserializer<'de>,
+        T: FromStr + Deserialize<'de>,
+        T::Err: fmt::Display,
     {
         #[derive(Deserialize)]
         #[serde(untagged)]
-        enum StringOrFloat {
+        enum StringOr<T> {
             String(String),
-            Bool(bool),
+            T(T),
         }
 
-        match StringOrFloat::deserialize(deserializer)? {
-            StringOrFloat::String(s) => s.parse().map_err(de::Error::custom),
-            StringOrFloat::Bool(i) => Ok(i),
+        match StringOr::deserialize(deserializer)? {
+            StringOr::String(s) => s.parse().map_err(de::Error::custom),
+            StringOr::T(t) => Ok(t),
         }
     }
 }

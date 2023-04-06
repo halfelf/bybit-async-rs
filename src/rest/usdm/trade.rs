@@ -4,6 +4,7 @@ use crate::models::{
     usdm::WorkingType,
     OrderType, Product, Side, TimeInForce,
 };
+use crate::parser::string_or;
 use fehler::throw;
 use reqwest::Method;
 use rust_decimal::Decimal;
@@ -92,4 +93,21 @@ where
         throw!(serde::de::Error::custom("not success code"))
     }
     Ok(v)
+}
+
+crate::define_request! {
+    Name => AutoCancelAllOpenOrders;
+    Product => Product::UsdMFutures;
+    Method => Method::POST;
+    Endpoint => "/fapi/v1/countdownCancelAll";
+    Signed => true;
+    Request => {
+        pub symbol: String,
+        pub countdown_time: u64,
+    };
+    Response => {
+        pub symbol: String,
+        #[serde(with="string_or")]
+        pub countdown_time: u64,
+    };
 }

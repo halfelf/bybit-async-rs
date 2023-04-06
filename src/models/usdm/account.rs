@@ -1,4 +1,4 @@
-use crate::parser::{string_or_bool, string_or_decimal};
+use crate::parser::{string_or, string_or_decimal};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -28,7 +28,7 @@ pub struct Asset {
     pub cross_un_pnl: Decimal,
     #[serde(with = "string_or_decimal")]
     pub available_balance: Decimal,
-    #[serde(with = "string_or_bool")]
+    #[serde(with = "string_or")]
     pub margin_available: bool,
     pub update_time: u64,
 }
@@ -48,7 +48,7 @@ pub struct Position {
     #[serde(with = "string_or_decimal")]
     pub open_order_initial_margin: Decimal,
     pub leverage: String,
-    #[serde(with = "string_or_bool")]
+    #[serde(with = "string_or")]
     pub isolated: bool,
     #[serde(with = "string_or_decimal")]
     pub entry_price: Decimal,

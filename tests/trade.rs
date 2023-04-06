@@ -17,3 +17,19 @@ async fn cancel_all_open_orders() {
     let resp = &*resp;
     println!("{resp:?}");
 }
+
+#[throws(Error)]
+#[tokio::test]
+async fn auto_cancel_all_open_orders() {
+    env_logger::init();
+
+    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = binance
+        .request(usdm::AutoCancelAllOpenOrdersRequest {
+            symbol: "BTCUSDT".into(),
+            countdown_time: 1000000,
+        })
+        .await?;
+    let resp = &*resp;
+    println!("{resp:?}");
+}
