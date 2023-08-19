@@ -8,9 +8,9 @@ use serde::{Deserialize, Serialize};
 
 crate::define_request! {
     Name => ExchangeInformation;
-    Product => Product::UsdMFutures;
+    Product => Product::CoinMFutures;
     Method => Method::GET;
-    Endpoint => "/fapi/v1/exchangeInfo";
+    Endpoint => "/dapi/v1/exchangeInfo";
     Signed => false;
     Request => {};
     Response => {
@@ -37,12 +37,12 @@ pub struct Symbol {
 
 crate::define_request! {
     Name => FundingRate;
-    Product => Product::UsdMFutures;
+    Product => Product::CoinMFutures;
     Method => Method::GET;
-    Endpoint => "/fapi/v1/fundingRate";
+    Endpoint => "/dapi/v1/fundingRate";
     Signed => false;
     Request => {
-        pub symbol: Option<String>,
+        pub symbol: String,
         #[serde(with = "ts_milliseconds_option")]
         pub start_time: Option<DateTime<Utc>>,
         #[serde(with = "ts_milliseconds_option")]

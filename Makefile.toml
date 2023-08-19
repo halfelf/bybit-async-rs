@@ -14,4 +14,4 @@ clear = true
 script = "cargo test ${@}"
 
 [tasks.run]
-script = "cargo run ${@}"
+script = "cargo run --release ${@}"

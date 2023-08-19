@@ -1,10 +1,7 @@
 pub mod string_or_decimal {
     use rust_decimal::Decimal;
-    use serde::{
-        de::{self},
-        Deserialize, Deserializer, Serializer,
-    };
-    use std::fmt::{self};
+    use serde::{de, Deserialize, Deserializer, Serializer};
+    use std::fmt;
 
     pub fn serialize<T, S>(value: &T, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -41,7 +38,7 @@ pub mod string_or_decimal {
 pub mod string_or_decimal_opt {
     use rust_decimal::Decimal;
     use serde::{Deserializer, Serializer};
-    use std::fmt::{self};
+    use std::fmt;
 
     pub fn serialize<T, S>(value: &Option<T>, serializer: S) -> Result<S::Ok, S::Error>
     where

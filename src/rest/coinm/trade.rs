@@ -6,7 +6,7 @@ crate::define_request! {
     Name => ModifyOrder;
     Product => Product::UsdMFutures;
     Method => Method::PUT;
-    Endpoint => "/fapi/v1/order";
+    Endpoint => "/dapi/v1/order";
     Signed => true;
     Request => {
         pub order_id: Option<u64>,
