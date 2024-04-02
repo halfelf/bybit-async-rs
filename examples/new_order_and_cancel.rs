@@ -1,8 +1,8 @@
 use anyhow::Error;
-use binance_async::{
+use bybit_async::{
     models::{OrderType, Side, TimeInForce},
     rest::usdm,
-    Binance,
+    Bybit,
 };
 use fehler::throws;
 use rust_decimal::{prelude::FromPrimitive, Decimal};
@@ -13,8 +13,8 @@ use std::env::var;
 async fn main() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit
         .request(usdm::NewOrderRequest {
             symbol: "ethusdt".into(),
             r#type: OrderType::Limit,
@@ -28,7 +28,7 @@ async fn main() {
         .await?;
     println!("{resp:?}");
 
-    let resp = binance
+    let resp = bybit
         .request(usdm::CancelOrderRequest {
             symbol: "ethusdt".into(),
             order_id: Some(resp.order_id),

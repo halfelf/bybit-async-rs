@@ -1,21 +1,21 @@
 [package]
-authors = ["Weiyuan Wu <weiyuan@crows.land>"]
-description = "Rust Library for the Binance API (Async)"
-documentation = "https://docs.rs/crate/binance-async"
-edition = "2018"
-keywords = ["cryptocurrency", "trading", "binance", "async"]
+authors = ["Shu Wang <halfelf.ronin@gmail.com>"]
+description = "Rust Library for the Bybit API (Async)"
+# documentation = "https://docs.rs/crate/bybit-async"
+edition = "2021"
+keywords = ["cryptocurrency", "trading", "bybit", "async"]
 license = "MIT"
-name = "binance-async"
+name = "bybit-async"
 readme = "README.md"
-repository = "https://github.com/dovahcrow/binance-async-rs"
-version = "0.3.0"
+repository = "https://github.com/halfelf/bybit-async-rs"
+version = "0.1.0"
 
 [features]
 print-response = []
 zero-copy = ["owning_ref"]
 
 [lib]
-name = "binance_async"
+name = "bybit_async"
 path = "src/lib.rs"
 
 [dependencies]
@@ -24,19 +24,19 @@ fehler = "1"
 futures = "0.3"
 hex = "0.4"
 hmac = "0.12"
-http = "0.2"
+http = "1.1"
 log = "0.4"
 paste = "1"
-reqwest = "0.11"
+reqwest = "0.12"
 rust_decimal = {version = "1", features = ["serde-with-str"]}
 serde = {version = "1", features = ["derive"]}
 serde_json = {version = "1", features = ["raw_value"]}
-serde_qs = "~0.11"
+serde_qs = "~0.12"
 sha2 = "0.10"
 thiserror = "1"
 tokio = "1"
-tokio-tungstenite = {version = "0.18", features = ["native-tls"]}
-tungstenite = "0.18"
+tokio-tungstenite = {version = "0.21", features = ["rustls-tls-native-roots"]}
+tungstenite = "0.21"
 url = "2"
 
 owning_ref = {version = "0.4", optional = true}

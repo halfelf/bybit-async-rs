@@ -1,8 +1,8 @@
 use anyhow::Error;
-use binance_async::{
+use bybit_async::{
     rest::usdm::StartUserDataStreamRequest,
-    websocket::{usdm::WebsocketMessage, BinanceWebsocket},
-    Binance,
+    websocket::{usdm::WebsocketMessage, BybitWebsocket},
+    Bybit,
 };
 use fehler::throws;
 use futures::StreamExt;
@@ -14,10 +14,10 @@ use tokio::time::timeout;
 async fn ws_userstream() {
     env_logger::init();
 
-    let binance = Binance::with_key(&var("BINANCE_KEY")?);
-    let listen_key = binance.request(StartUserDataStreamRequest {}).await?;
-    let mut ws: BinanceWebsocket<WebsocketMessage> =
-        BinanceWebsocket::new(&[listen_key.listen_key.as_str()]).await?;
+    let bybit = Bybit::with_key(&var("BINANCE_KEY")?);
+    let listen_key = bybit.request(StartUserDataStreamRequest {}).await?;
+    let mut ws: BybitWebsocket<WebsocketMessage> =
+        BybitWebsocket::new(&[listen_key.listen_key.as_str()]).await?;
 
     let fut = timeout(Duration::from_secs(5), ws.next());
     let msg = fut.await?.expect("ws exited")?;

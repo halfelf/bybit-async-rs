@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::usdm, Binance};
+use bybit_async::{rest::usdm, Bybit};
 use fehler::throws;
 use std::env::var;
 
@@ -8,13 +8,12 @@ use std::env::var;
 async fn cancel_all_open_orders() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit
         .request(usdm::CancelAllOpenOrdersRequest {
             symbol: "BTCUSDT".into(),
         })
         .await?;
-    let resp = &*resp;
     println!("{resp:?}");
 }
 
@@ -23,13 +22,12 @@ async fn cancel_all_open_orders() {
 async fn auto_cancel_all_open_orders() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit
         .request(usdm::AutoCancelAllOpenOrdersRequest {
             symbol: "BTCUSDT".into(),
             countdown_time: 1000000,
         })
         .await?;
-    let resp = &*resp;
     println!("{resp:?}");
 }

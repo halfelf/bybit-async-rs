@@ -1,7 +1,7 @@
 use anyhow::Error;
-use binance_async::{
+use bybit_async::{
     rest::{coinm, usdm},
-    Binance,
+    Bybit,
 };
 use chrono::{DateTime, Utc};
 use fehler::throws;
@@ -11,9 +11,9 @@ use fehler::throws;
 async fn main() {
     env_logger::init();
 
-    let binance = Binance::new();
+    let bybit = Bybit::new();
 
-    let resp = binance
+    let resp = bybit
         .request(usdm::FundingRateRequest {
             symbol: Some("SOLUSDT".into()),
             start_time: Some(
@@ -27,7 +27,7 @@ async fn main() {
         .await?;
     println!("{resp:?}");
 
-    let resp = binance
+    let resp = bybit
         .request(coinm::FundingRateRequest {
             symbol: "SOLUSD_PERP".into(),
             start_time: Some(

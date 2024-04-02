@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::usdm, Binance};
+use bybit_async::{rest::usdm, Bybit};
 use fehler::throws;
 use std::env::var;
 
@@ -8,10 +8,9 @@ use std::env::var;
 async fn get_current_position_mode() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit
         .request(usdm::GetCurrentPositionModeRequest {})
         .await?;
-    let resp = &*resp;
     println!("{resp:?}");
 }

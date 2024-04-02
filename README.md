@@ -1,15 +1,15 @@
-# binance-async
+# bybit-async
 
-Unofficial Rust Library for the [Binance API](https://github.com/binance-exchange/binance-official-api-docs) with Async/Await and ergonomic design.
+Unofficial Rust Library for the [Bybit API](https://github.com/bybit-exchange/bybit-official-api-docs) with Async/Await and ergonomic design.
 
-[![Crates.io](https://img.shields.io/crates/v/binance-async.svg)](https://crates.io/crates/binance-async)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/dovahcrow/binance-async-rs/ci.yml?style=flat-square)](https://github.com/dovahcrow/binance-async-rs/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/bybit-async.svg)](https://crates.io/crates/bybit-async)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/dovahcrow/bybit-async-rs/ci.yml?style=flat-square)](https://github.com/dovahcrow/bybit-async-rs/actions/workflows/ci.yml)
 [![MIT licensed](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE-MIT)
 [![Apache-2.0 licensed](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE-APACHE)
 
-[Documentation](https://docs.rs/crate/binance-async)
+[Documentation](https://docs.rs/crate/bybit-async)
 
-This library borrows code from Flavio Oliveira (wisespace-io)'s [work](https://github.com/wisespace-io/binance-rs). Thanks for his excellent library!
+This library borrows code from Flavio Oliveira (wisespace-io)'s [work](https://github.com/wisespace-io/bybit-rs). Thanks for his excellent library!
 
 This repo is at its early stage, not all requests/websockets are implemented.
 However, the related mechanism is already there: adding support for new requests/websocket events
@@ -30,7 +30,7 @@ Add this to your Cargo.toml
 
 ```toml
 [dependencies]
-binance-async = 0.3
+bybit-async = 0.3
 ```
 
 Examples located in the examples folder.
@@ -66,7 +66,7 @@ let req = NewOrderRequest {
     ..Default::default()
 };
 
-let client = Binance::new();
+let client = Bybit::new();
 client.request(req).await?;
 ```
 
@@ -88,7 +88,7 @@ This associates necessary information to each request struct.
 
 ## Missing Endpoints? You Can Add it Easily!
 
-Due to the amount of APIs Binance provides, it is hard to cover everything for this
+Due to the amount of APIs Bybit provides, it is hard to cover everything for this
 library. 
 
 However, since this library uses the `struct-based Request/Response` pattern, adding a new
@@ -117,7 +117,7 @@ impl Request for GetCurrentPositionModeRequest {
 }
 ```
 
-Or, to make it simpler, use the macro ([see in action](https://github.com/dovahcrow/binance-async-rs/blob/master/src/rest/usdm/account.rs)):
+Or, to make it simpler, use the macro ([see in action](https://github.com/dovahcrow/bybit-async-rs/blob/master/src/rest/usdm/account.rs)):
 ```rust
 crate::define_request! {
     Name => GetCurrentPositionMode;

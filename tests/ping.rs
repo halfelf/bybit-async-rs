@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::spot, Binance};
+use bybit_async::{rest::spot, Bybit};
 use fehler::throws;
 
 #[throws(Error)]
@@ -7,8 +7,7 @@ use fehler::throws;
 async fn ping() {
     env_logger::init();
 
-    let binance = Binance::new();
-    let resp = binance.request(spot::PingRequest {}).await?;
-    let resp = &*resp;
+    let bybit = Bybit::new();
+    let resp = bybit.request(spot::PingRequest {}).await?;
     println!("{resp:?}");
 }

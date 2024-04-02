@@ -1,5 +1,5 @@
 use anyhow::Error;
-use binance_async::{rest::usdm, Binance};
+use bybit_async::{rest::usdm, Bybit};
 use fehler::throws;
 
 #[throws(Error)]
@@ -7,8 +7,7 @@ use fehler::throws;
 async fn exchange_information() {
     env_logger::init();
 
-    let binance = Binance::new();
-    let resp = binance.request(usdm::ExchangeInformationRequest {}).await?;
-    let resp = &*resp;
+    let bybit = Bybit::new();
+    let resp = bybit.request(usdm::ExchangeInformationRequest {}).await?;
     println!("{resp:?}");
 }

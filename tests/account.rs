@@ -1,7 +1,7 @@
 use anyhow::Error;
-use binance_async::{
+use bybit_async::{
     rest::{spot, usdm},
-    Binance,
+    Bybit,
 };
 use fehler::throws;
 use std::env::var;
@@ -11,9 +11,8 @@ use std::env::var;
 async fn get_account_spot() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance.request(spot::GetAccountRequest {}).await?;
-    let resp = &*resp;
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit.request(spot::GetAccountRequest {}).await?;
     println!("{resp:?}");
 }
 
@@ -22,10 +21,9 @@ async fn get_account_spot() {
 async fn get_account_usdm() {
     env_logger::init();
 
-    let binance = Binance::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
-    let resp = binance
+    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let resp = bybit
         .request(usdm::AccountInformationV2Request {})
         .await?;
-    let resp = &*resp;
     println!("{resp:?}");
 }

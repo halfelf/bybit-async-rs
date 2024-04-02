@@ -1,6 +1,6 @@
 use super::models::AggregateTrade;
 use crate::{
-    error::BinanceError::{self, *},
+    error::BybitError::{self, *},
     models::Product,
     websocket::ParseMessage,
 };
@@ -18,7 +18,7 @@ pub enum WebsocketMessage {
 impl ParseMessage for WebsocketMessage {
     const PRODUCT: Product = Product::CoinMFutures;
 
-    #[throws(BinanceError)]
+    #[throws(BybitError)]
     fn parse(stream: &str, data: &str) -> Self {
         if stream.ends_with("@aggTrade") {
             let value: AggregateTrade = from_str(data)?;

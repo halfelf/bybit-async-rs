@@ -1,7 +1,7 @@
 use anyhow::Error;
-use binance_async::{
-    rest::usdm::StartUserDataStreamRequest, websocket::usdm::WebsocketMessage, Binance,
-    BinanceWebsocket,
+use bybit_async::{
+    rest::usdm::StartUserDataStreamRequest, websocket::usdm::WebsocketMessage, Bybit,
+    BybitWebsocket,
 };
 use fehler::throws;
 use futures::StreamExt;
@@ -12,9 +12,9 @@ use std::env::var;
 async fn main() {
     env_logger::init();
 
-    let binance = Binance::with_key(&var("BINANCE_KEY")?);
-    let listen_key = binance.request(StartUserDataStreamRequest {}).await?;
-    let mut ws: BinanceWebsocket<WebsocketMessage> = BinanceWebsocket::new(&[
+    let bybit = Bybit::with_key(&var("BINANCE_KEY")?);
+    let listen_key = bybit.request(StartUserDataStreamRequest {}).await?;
+    let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(&[
         listen_key.listen_key.as_str(),
         "ethusdt@aggTrade",
         "solusdt@bookTicker",

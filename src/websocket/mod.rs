@@ -4,7 +4,7 @@ pub mod spot;
 pub mod usdm;
 
 use crate::{
-    error::BinanceError::{self, *},
+    error::BybitError::{self, *},
     models::Product,
     Config,
 };
@@ -29,21 +29,21 @@ type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 pub trait ParseMessage: Sized {
     const PRODUCT: Product;
 
-    fn parse(stream: &str, data: &str) -> Result<Self, BinanceError>;
+    fn parse(stream: &str, data: &str) -> Result<Self, BybitError>;
     fn ping() -> Self;
 }
 
-pub struct BinanceWebsocket<M> {
+pub struct BybitWebsocket<M> {
     stream: WSStream,
     _phantom: PhantomData<M>,
 }
 
-impl<M> BinanceWebsocket<M>
+impl<M> BybitWebsocket<M>
 where
     M: ParseMessage,
 {
-    #[throws(BinanceError)]
-    pub async fn new<I, S>(topics: I) -> BinanceWebsocket<M>
+    #[throws(BybitError)]
+    pub async fn new<I, S>(topics: I) -> BybitWebsocket<M>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
@@ -52,8 +52,8 @@ where
         Self::with_config(&config, topics).await?
     }
 
-    #[throws(BinanceError)]
-    pub async fn with_config<I, S>(config: &Config, topics: I) -> BinanceWebsocket<M>
+    #[throws(BybitError)]
+    pub async fn with_config<I, S>(config: &Config, topics: I) -> BybitWebsocket<M>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
@@ -94,8 +94,8 @@ where
     }
 }
 
-impl<M> BinanceWebsocket<M> {
-    #[throws(BinanceError)]
+impl<M> BybitWebsocket<M> {
+    #[throws(BybitError)]
     pub async fn pong(&mut self) {
         self.stream.send(Message::Pong(vec![])).await?
     }
@@ -108,11 +108,11 @@ struct MessageWithTopic<'a> {
     data: &'a RawValue,
 }
 
-impl<M> Stream for BinanceWebsocket<M>
+impl<M> Stream for BybitWebsocket<M>
 where
     M: ParseMessage + Unpin + std::fmt::Debug,
 {
-    type Item = Result<M, BinanceError>;
+    type Item = Result<M, BybitError>;
 
     fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context) -> Poll<Option<Self::Item>> {
         let c = match self.stream.poll_next_unpin(cx) {

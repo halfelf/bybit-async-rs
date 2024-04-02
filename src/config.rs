@@ -18,17 +18,17 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            rest_api_endpoint: "https://api.binance.com".into(),
-            ws_endpoint: "wss://stream.binance.com:9443".into(),
+            rest_api_endpoint: "https://api.bybit.com".into(),
+            ws_endpoint: "wss://stream.bybit.com:9443".into(),
 
-            usdm_futures_rest_api_endpoint: "https://fapi.binance.com".into(),
-            usdm_futures_ws_endpoint: "wss://fstream.binance.com".into(),
+            usdm_futures_rest_api_endpoint: "https://fapi.bybit.com".into(),
+            usdm_futures_ws_endpoint: "wss://fstream.bybit.com".into(),
 
-            coinm_futures_rest_api_endpoint: "https://dapi.binance.com".into(),
-            coinm_futures_ws_endpoint: "wss://dstream.binance.com".into(),
+            coinm_futures_rest_api_endpoint: "https://dapi.bybit.com".into(),
+            coinm_futures_ws_endpoint: "wss://dstream.bybit.com".into(),
 
-            european_options_rest_api_endpoint: "https://eapi.binance.com".into(),
-            european_options_ws_endpoint: "wss://estream.binance.com".into(),
+            european_options_rest_api_endpoint: "https://eapi.bybit.com".into(),
+            european_options_ws_endpoint: "wss://estream.bybit.com".into(),
 
             recv_window: 5000,
         }
@@ -38,10 +38,10 @@ impl Default for Config {
 impl Config {
     pub fn testnet() -> Self {
         // Self::default()
-        //     .set_rest_api_endpoint("https://testnet.binance.vision")
-        //     .set_ws_endpoint("wss://testnet.binance.vision/ws")
-        //     .set_futures_rest_api_endpoint("https://testnet.binancefuture.com")
-        //     .set_futures_ws_endpoint("https://testnet.binancefuture.com/ws")
+        //     .set_rest_api_endpoint("https://testnet.bybit.vision")
+        //     .set_ws_endpoint("wss://testnet.bybit.vision/ws")
+        //     .set_futures_rest_api_endpoint("https://testnet.bybitfuture.com")
+        //     .set_futures_ws_endpoint("https://testnet.bybitfuture.com/ws")
         todo!()
     }
 }

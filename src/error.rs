@@ -1,15 +1,16 @@
-use http::{header::InvalidHeaderValue, StatusCode};
+use reqwest::header::InvalidHeaderValue;
+use reqwest::StatusCode;
 use serde::Deserialize;
 use thiserror::Error;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct BinanceResponseError {
+pub struct BybitResponseError {
     pub code: i64,
     pub msg: String,
 }
 
 #[derive(Debug, Error)]
-pub enum BinanceError {
+pub enum BybitError {
     #[error("No Api key set for private api")]
     MissingApiKey,
     #[error("No Api secret set for private api")]
@@ -28,8 +29,8 @@ pub enum BinanceError {
     StartWebsocketError(StatusCode, String),
     #[error("The field for the given event type {0} in user data stream is empty")]
     EmptyUserDataStream(String),
-    #[error("Binance returns error: {code} - {msg}")]
-    BinanceResponse { code: i64, msg: String },
+    #[error("Bybit returns error: {code} - {msg}")]
+    BybitResponse { code: i64, msg: String },
 
     #[error(transparent)]
     Websocket(#[from] tungstenite::Error),
@@ -43,9 +44,9 @@ pub enum BinanceError {
     SerdeJson(#[from] serde_json::Error),
 }
 
-impl From<BinanceResponseError> for BinanceError {
-    fn from(v: BinanceResponseError) -> Self {
-        Self::BinanceResponse {
+impl From<BybitResponseError> for BybitError {
+    fn from(v: BybitResponseError) -> Self {
+        Self::BybitResponse {
             code: v.code,
             msg: v.msg,
         }

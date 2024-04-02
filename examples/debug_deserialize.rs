@@ -1,4 +1,4 @@
-use binance_async::rest::usdm;
+use bybit_async::rest::usdm;
 use serde_json::from_str;
 
 fn main() {

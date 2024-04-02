@@ -4,9 +4,9 @@ pub mod usdm;
 
 use crate::{
     config::Config,
-    error::BinanceError::{self, *},
+    error::BybitError::{self, *},
     models::Product,
-    BinanceResponseError,
+    BybitResponseError,
 };
 use chrono::Utc;
 use fehler::{throw, throws};
@@ -35,20 +35,20 @@ pub trait Request: Serialize {
 }
 
 #[derive(Clone, Default)]
-pub struct Binance {
+pub struct Bybit {
     key: Option<String>,
     secret: Option<String>,
     client: Client,
     config: Config,
 }
 
-impl Binance {
+impl Bybit {
     pub fn new() -> Self {
         Default::default()
     }
 
     pub fn with_key(api_key: &str) -> Self {
-        Binance {
+        Bybit {
             client: Client::new(),
             key: Some(api_key.into()),
             secret: None,
@@ -57,7 +57,7 @@ impl Binance {
     }
 
     pub fn with_key_and_secret(api_key: &str, api_secret: &str) -> Self {
-        Binance {
+        Bybit {
             client: Client::new(),
             key: Some(api_key.into()),
             secret: Some(api_secret.into()),
@@ -69,7 +69,7 @@ impl Binance {
         self.config = config;
     }
 
-    #[throws(BinanceError)]
+    #[throws(BybitError)]
     pub async fn request<R>(&self, req: R) -> RestResponse<R::Response>
     where
         R: Request,
@@ -108,7 +108,7 @@ impl Binance {
         let url = format!("{base}{path}?{params}");
 
         let mut custom_headers = HeaderMap::new();
-        custom_headers.insert(USER_AGENT, HeaderValue::from_static("binance-async-rs"));
+        custom_headers.insert(USER_AGENT, HeaderValue::from_static("bybit-async-rs"));
         if !body.is_empty() {
             custom_headers.insert(
                 CONTENT_TYPE,
@@ -139,7 +139,7 @@ impl Binance {
         self.handle_response(resp).await?
     }
 
-    #[throws(BinanceError)]
+    #[throws(BybitError)]
     fn signature(&self, params: &str, body: &str) -> String {
         let secret = match &self.secret {
             Some(s) => s,
@@ -155,7 +155,7 @@ impl Binance {
     }
 
     #[cfg(not(feature = "zero-copy"))]
-    #[throws(BinanceError)]
+    #[throws(BybitError)]
     async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> RestResponse<O> {
         let status = resp.status();
         let body = resp.text().await?;
@@ -166,7 +166,7 @@ impl Binance {
 
         match from_str(&body) {
             Ok(v) => v,
-            Err(e) => match from_str::<BinanceResponseError>(&body) {
+            Err(e) => match from_str::<BybitResponseError>(&body) {
                 Ok(e) => throw!(e),
                 Err(_) => throw!(e),
             },
@@ -174,7 +174,7 @@ impl Binance {
     }
 
     #[cfg(feature = "zero-copy")]
-    #[throws(BinanceError)]
+    #[throws(BybitError)]
     async fn handle_response<O: DeserializeOwned>(&self, resp: Response) -> RestResponse<O> {
         let status = resp.status();
         let body = resp.text().await?;
@@ -183,11 +183,11 @@ impl Binance {
             debug!("Response is {status} {body}");
         };
 
-        OwningHandle::try_new(body, |body| -> Result<_, BinanceError> {
+        OwningHandle::try_new(body, |body| -> Result<_, BybitError> {
             let body = unsafe { &*body };
             match from_str(body) {
                 Ok(v) => Ok(C(v)),
-                Err(e) => match from_str::<BinanceResponseError>(&body) {
+                Err(e) => match from_str::<BybitResponseError>(&body) {
                     Ok(e) => throw!(e),
                     Err(_) => throw!(e),
                 },
@@ -215,7 +215,7 @@ pub type RestResponse<O> = O;
 
 #[cfg(test)]
 mod test {
-    use super::Binance;
+    use super::Bybit;
     use anyhow::Error;
     use fehler::throws;
     use url::{form_urlencoded::Serializer, Url};
@@ -223,7 +223,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_query() {
-        let tr = Binance::with_key_and_secret(
+        let tr = Bybit::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -254,7 +254,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_body() {
-        let tr = Binance::with_key_and_secret(
+        let tr = Bybit::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -285,7 +285,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_query_body() {
-        let tr = Binance::with_key_and_secret(
+        let tr = Bybit::with_key_and_secret(
             "vmPUZE6mv9SD5VNHk4HlWFsOr6aKE2zvsw0MuIgwCIPy6utIco14y7Ju91duEh8A",
             "NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j",
         );
@@ -321,7 +321,7 @@ mod test {
     #[throws(Error)]
     #[test]
     fn signature_body2() {
-        let tr = Binance::with_key_and_secret(
+        let tr = Bybit::with_key_and_secret(
             "vj1e6h50pFN9CsXT5nsL25JkTuBHkKw3zJhsA6OPtruIRalm20vTuXqF3htCZeWW",
             "5Cjj09rLKWNVe7fSalqgpilh5I3y6pPplhOukZChkusLqqi9mQyFk34kJJBTdlEJ",
         );
