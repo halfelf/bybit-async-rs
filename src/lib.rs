@@ -38,7 +38,7 @@
 //!
 //! ```rust
 //! async fn main() {
-//!    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+//!    let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
 //!    let resp = bybit
 //!        .request(usdm::NewOrderRequest {
 //!            symbol: "ethusdt".into(),
@@ -68,7 +68,7 @@
 //!
 //! ```rust
 //! async fn main() {
-//!     let bybit = Bybit::with_key(&var("BINANCE_KEY")?);
+//!     let bybit = Bybit::with_key(&var("BYBIT_KEY")?);
 //!     let listen_key = bybit.request(StartUserDataStreamRequest {}).await?;
 //!     let mut ws: BybitWebsocket<UsdMWebsocketMessage> = BybitWebsocket::new(&[
 //!         listen_key.listen_key.as_str(),

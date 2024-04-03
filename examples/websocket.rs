@@ -12,7 +12,7 @@ use std::env::var;
 async fn main() {
     env_logger::init();
 
-    let bybit = Bybit::with_key(&var("BINANCE_KEY")?);
+    let bybit = Bybit::with_key(&var("BYBIT_KEY")?);
     let listen_key = bybit.request(StartUserDataStreamRequest {}).await?;
     let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(&[
         listen_key.listen_key.as_str(),

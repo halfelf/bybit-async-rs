@@ -1,7 +1,4 @@
-pub mod coinm;
-mod models;
-pub mod spot;
-pub mod usdm;
+pub mod topics;
 
 use crate::{
     error::BybitError::{self, *},
@@ -11,7 +8,6 @@ use crate::{
 use fehler::{throw, throws};
 use futures::{stream::Stream, SinkExt, StreamExt};
 use log::debug;
-pub use models::*;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, value::RawValue};
@@ -27,8 +23,6 @@ use tungstenite::Message;
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
 pub trait ParseMessage: Sized {
-    const PRODUCT: Product;
-
     fn parse(stream: &str, data: &str) -> Result<Self, BybitError>;
     fn ping() -> Self;
 }
@@ -43,17 +37,7 @@ where
     M: ParseMessage,
 {
     #[throws(BybitError)]
-    pub async fn new<I, S>(topics: I) -> BybitWebsocket<M>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        let config = Config::default();
-        Self::with_config(&config, topics).await?
-    }
-
-    #[throws(BybitError)]
-    pub async fn with_config<I, S>(config: &Config, topics: I) -> BybitWebsocket<M>
+    pub async fn new<I, S>(config: Config, topics: I) -> BybitWebsocket<M>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
@@ -71,8 +55,8 @@ where
             throw!(EmptyTopics)
         }
 
-        let base = match M::PRODUCT {
-            Product::Spot => &config.ws_endpoint,
+        let base = match config.product {
+            Product::Spot => &config.spot_ws_endpoint,
             Product::UsdMFutures => &config.usdm_futures_ws_endpoint,
             Product::CoinMFutures => &config.coinm_futures_ws_endpoint,
             Product::EuropeanOptions => &config.european_options_ws_endpoint,

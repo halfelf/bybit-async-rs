@@ -21,7 +21,6 @@ pub struct ServerTime {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Side {
     Buy,
     Sell,
@@ -34,12 +33,11 @@ impl Default for Side {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "UPPERCASE")]
 pub enum TimeInForce {
     GTC,
     IOC,
     FOK,
-    GTX,
+    PostOnly,
 }
 
 impl Default for TimeInForce {
@@ -49,15 +47,20 @@ impl Default for TimeInForce {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+#[allow(non_camel_case_types)]
 pub enum OrderType {
     Market,
     Limit,
-    StopLoss,
-    StopLossLimit,
     TakeProfit,
-    TakeProfitLimit,
-    LimitMaker,
+    StopLoss,
+    TrailingStop,
+    Stop,
+    PartialTakeProfit,
+    PartialStopLoss,
+    tpslOrder,
+    OcoOrder,
+    MmRateClose,
+    BidirectionalTpslOrder,
 }
 
 impl Default for OrderType {
@@ -239,4 +242,11 @@ pub struct AssetInformation {
     asset: String,
     margin_available: bool,
     auto_asset_exchange: String,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum OrderBookType {
+    Snapshot,
+    Delta,
 }

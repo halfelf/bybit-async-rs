@@ -8,7 +8,7 @@ use std::env::var;
 async fn cancel_all_open_orders() {
     env_logger::init();
 
-    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
     let resp = bybit
         .request(usdm::CancelAllOpenOrdersRequest {
             symbol: "BTCUSDT".into(),
@@ -22,7 +22,7 @@ async fn cancel_all_open_orders() {
 async fn auto_cancel_all_open_orders() {
     env_logger::init();
 
-    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
     let resp = bybit
         .request(usdm::AutoCancelAllOpenOrdersRequest {
             symbol: "BTCUSDT".into(),

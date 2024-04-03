@@ -13,7 +13,7 @@ use std::env::var;
 async fn main() {
     env_logger::init();
 
-    let bybit = Bybit::with_key_and_secret(&var("BINANCE_KEY")?, &var("BINANCE_SECRET")?);
+    let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
     let resp = bybit
         .request(usdm::NewOrderRequest {
             symbol: "ethusdt".into(),

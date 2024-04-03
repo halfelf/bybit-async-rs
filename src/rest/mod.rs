@@ -99,12 +99,7 @@ impl Bybit {
 
         let path = R::ENDPOINT.to_string();
 
-        let base = match R::PRODUCT {
-            Product::Spot => &self.config.rest_api_endpoint,
-            Product::UsdMFutures => &self.config.usdm_futures_rest_api_endpoint,
-            Product::CoinMFutures => &self.config.coinm_futures_rest_api_endpoint,
-            Product::EuropeanOptions => &self.config.european_options_rest_api_endpoint,
-        };
+        let base = &self.config.rest_api_endpoint;
         let url = format!("{base}{path}?{params}");
 
         let mut custom_headers = HeaderMap::new();
