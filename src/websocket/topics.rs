@@ -1,6 +1,6 @@
 use crate::{
     error::BybitError::{self, *},
-    models::{OrderStatus, OrderType, Side, TimeInForce, OrderBookType},
+    models::{OrderBookType, OrderStatus, OrderType, Side, TimeInForce},
     websocket::ParseMessage,
 };
 use fehler::{throw, throws};
@@ -100,7 +100,6 @@ pub struct OrderUpdate {
     pub fee_currency: String,
 }
 
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 // https://bybit-exchange.github.io/docs/zh-TW/v5/websocket/public/orderbook
 pub struct OrderBook {
@@ -114,7 +113,6 @@ pub struct OrderBook {
 
     pub cts: u64,
 }
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct OrderBookUpdate {
@@ -132,7 +130,6 @@ pub struct OrderBookUpdate {
 
     pub seq: u64,
 }
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 // https://bybit-exchange.github.io/docs/zh-TW/v5/websocket/public/trade

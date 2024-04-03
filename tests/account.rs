@@ -22,8 +22,6 @@ async fn get_account_usdm() {
     env_logger::init();
 
     let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
-    let resp = bybit
-        .request(usdm::AccountInformationV2Request {})
-        .await?;
+    let resp = bybit.request(usdm::AccountInformationV2Request {}).await?;
     println!("{resp:?}");
 }

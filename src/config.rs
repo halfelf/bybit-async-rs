@@ -11,8 +11,8 @@ const PRIVATE_WS_ENDPOINT: &str = "wss://stream.bybit.com/v5/private";
 pub struct Config {
     pub product: Product,
 
-    pub rest_api_endpoint: String,  /// Unified REST API endpoint
-
+    pub rest_api_endpoint: String,
+    /// Unified REST API endpoint
     pub spot_ws_endpoint: String,
     pub usdm_futures_ws_endpoint: String,
     pub coinm_futures_ws_endpoint: String,
