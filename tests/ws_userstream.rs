@@ -11,10 +11,8 @@ async fn ws_user_stream() {
     env_logger::init();
 
     let config = Config::default();
-    let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(
-        config,
-        &["position", "order", "execution"]
-    ).await?;
+    let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(config).await?;
+    ws.subscribe(["position", "order", "execution"].to_vec()).await?;
 
     let fut = timeout(Duration::from_secs(5), ws.next());
     let msg = fut.await?.expect("ws exited")?;

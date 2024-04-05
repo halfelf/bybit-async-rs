@@ -1,40 +1,49 @@
 use crate::{
     error::BybitError::{self, *},
-    models::{OrderBookType, OrderStatus, OrderType, Side, TimeInForce},
+    models::{OrderStatus, OrderType, Side, TimeInForce},
     websocket::ParseMessage,
 };
 use fehler::{throw, throws};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
+use serde_with::{NoneAsEmptyString, DisplayFromStr, serde_as};
 
 #[derive(Debug, Clone, Serialize)]
 #[non_exhaustive]
 pub enum WebsocketMessage {
     Ping,
+    SubscribeSuccess(SubscribeSuccess),
 
     // User Data Stream
-    UserOrderUpdate(UserOrderUpdate),
-    // UserPositionUpdate(UserPositionUpdate),
-    // UserExecutionUpdate(UserExecutionUpdate),
+    UserOrderUpdate(Vec<UserOrderUpdate>),
+    // todo!(UserPositionUpdate(UserPositionUpdate),)
+    // todo!(UserExecutionUpdate(UserExecutionUpdate),)
 
     // Market Stream
-    PublicTrade(PublicTrade),
+    PublicTrade(Vec<PublicTradeUpdate>),
     OrderBook(OrderBook),
+    // todo!(tickers),
+    // todo!(kline),
+    // todo!(liquidation),
 }
 
 impl ParseMessage for WebsocketMessage {
     #[throws(BybitError)]
-    fn parse(stream: &str, data: &str) -> Self {
-        if stream.starts_with("orderbook") {
+    fn parse(topic: &str, data: &str) -> Self {
+        if topic.starts_with("orderbook") {
             Self::OrderBook(from_str(data)?)
-        } else if stream.starts_with("publicTrade") {
+        } else if topic.starts_with("publicTrade") {
             Self::PublicTrade(from_str(data)?)
-        } else if stream.starts_with("order") {
-            Self::PublicTrade(from_str(data)?)
+        } else if topic.starts_with("order") {
+            Self::UserOrderUpdate(from_str(data)?)
         } else {
-            throw!(UnknownStream(stream.into()))
+            throw!(UnknownStream(topic.into()))
         }
+    }
+
+    fn parse_succ(succ: &str) -> Result<Self, BybitError> {
+        Ok(Self::SubscribeSuccess(from_str(succ)?))
     }
 
     fn ping() -> Self {
@@ -42,24 +51,17 @@ impl ParseMessage for WebsocketMessage {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct UserOrderUpdate {
-    pub id: String,
-    pub topic: String,
-    pub creation_time: u64,
-    pub data: Vec<OrderUpdate>,
-}
-
+#[serde_as]
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 // https://bybit-exchange.github.io/docs/zh-TW/v5/websocket/private/order
-pub struct OrderUpdate {
+pub struct UserOrderUpdate {
     pub category: String,
     pub symbol: String,
     pub order_id: String,
     pub order_link_id: String,
-    pub block_trade_id: u64,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub block_trade_id: Option<u64>,
     pub side: Side,
     pub position_idx: u8,
     pub order_status: OrderStatus,
@@ -69,7 +71,8 @@ pub struct OrderUpdate {
     pub is_leverage: String,
     pub price: Decimal,
     pub qty: Decimal,
-    pub avg_price: Decimal,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub avg_price: Option<Decimal>,
     pub leaves_qty: Decimal,
     pub leaves_value: Decimal,
     pub cum_exec_qty: Decimal,
@@ -78,9 +81,12 @@ pub struct OrderUpdate {
     pub order_type: OrderType,
     pub stop_order_type: String,
     pub order_iv: String,
-    pub trigger_price: Decimal,
-    pub take_profit: Decimal,
-    pub stop_loss: Decimal,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub trigger_price: Option<Decimal>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub take_profit: Option<Decimal>,
+    #[serde_as(as = "NoneAsEmptyString")]
+    pub stop_loss: Option<Decimal>,
     pub trigger_by: String,
     pub tp_trigger_by: String,
     pub sl_trigger_by: String,
@@ -95,7 +101,9 @@ pub struct OrderUpdate {
     pub sl_limit_price: Decimal,
     pub tp_limit_price: Decimal,
     pub market_unit: String,
+    #[serde_as(as = "DisplayFromStr")]
     pub created_time: u64,
+    #[serde_as(as = "DisplayFromStr")]
     pub updated_time: u64,
     pub fee_currency: String,
 }
@@ -103,19 +111,6 @@ pub struct OrderUpdate {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 // https://bybit-exchange.github.io/docs/zh-TW/v5/websocket/public/orderbook
 pub struct OrderBook {
-    pub topic: String,
-
-    #[serde(rename = "type")]
-    pub type_: OrderBookType,
-
-    pub ts: u64,
-    pub data: OrderBookUpdate,
-
-    pub cts: u64,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct OrderBookUpdate {
     #[serde(rename = "s")]
     pub symbol: String,
 
@@ -133,18 +128,6 @@ pub struct OrderBookUpdate {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 // https://bybit-exchange.github.io/docs/zh-TW/v5/websocket/public/trade
-pub struct PublicTrade {
-    pub topic: String,
-
-    #[serde(rename = "type")]
-    pub type_: String,
-
-    pub ts: u64,
-
-    pub data: Vec<PublicTradeUpdate>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PublicTradeUpdate {
     #[serde(rename = "T")]
     pub exchange_time: u64,
@@ -162,4 +145,14 @@ pub struct PublicTradeUpdate {
     pub trade_id: String,
     #[serde(rename = "BT")]
     pub is_block_trade: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+// https://bybit-exchange.github.io/docs/zh-TW/v5/ws/connect
+pub struct SubscribeSuccess {
+    pub success: bool,
+    pub ret_msg: String,
+    pub op: String,
+    pub conn_id: String,
+    pub req_id: Option<String>,
 }

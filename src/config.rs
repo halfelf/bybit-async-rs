@@ -20,6 +20,9 @@ pub struct Config {
     pub private_ws_endpoint: String,
 
     pub recv_window: u64,
+
+    pub api_key: Option<String>,
+    pub api_secret: Option<String>,
 }
 
 impl Default for Config {
@@ -34,6 +37,8 @@ impl Default for Config {
             european_options_ws_endpoint: EUROPEAN_OPTIONS_WS_ENDPOINT.into(),
             private_ws_endpoint: PRIVATE_WS_ENDPOINT.into(),
             recv_window: 5000,
+            api_key: None,
+            api_secret: None,
         }
     }
 }
@@ -42,6 +47,14 @@ impl Config {
     pub fn new(product: Product) -> Self {
         Self {
             product,
+            ..Self::default()
+        }
+    }
+
+    pub fn private_new(api_key: String, api_secret: String) -> Self {
+        Self {
+            api_key: Some(api_key),
+            api_secret: Some(api_secret),
             ..Self::default()
         }
     }

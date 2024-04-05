@@ -14,13 +14,14 @@ async fn ws_public() {
 
     let config = Config::new(Product::UsdMFutures);
 
-    let mut ws: BybitWebsocket<WebsocketMessage> =
-        BybitWebsocket::new(config, &["orderbook.1.BTCUSDT", "publicTrade.BTCUSDT"]).await?;
+    let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(config).await?;
+    ws.subscribe(["orderbook.1.BTCUSDT", "publicTrade.BTCUSDT"].to_vec()).await?;
 
     let fut = timeout(Duration::from_secs(5), ws.next());
     let msg = fut.await?.expect("ws exited")?;
     match msg {
         WebsocketMessage::PublicTrade(trades) => println!("{trades:?}"),
+        WebsocketMessage::OrderBook(orderbook) => println!("{orderbook:?}"),
         _ => unreachable!(),
     }
 }
