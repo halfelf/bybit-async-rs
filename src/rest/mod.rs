@@ -1,6 +1,6 @@
-pub mod coinm;
-pub mod spot;
-pub mod usdm;
+mod account;
+mod market;
+mod trade;
 
 use crate::{
     config::Config,

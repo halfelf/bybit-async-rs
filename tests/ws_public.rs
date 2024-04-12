@@ -11,17 +11,14 @@ use tokio::time::timeout;
 #[tokio::test]
 async fn ws_public() {
     env_logger::init();
-
     let config = Config::new(Product::UsdMFutures);
-
     let mut ws: BybitWebsocket<WebsocketMessage> = BybitWebsocket::new(config).await?;
+    println!("connected");
     ws.subscribe(["orderbook.1.BTCUSDT", "publicTrade.BTCUSDT"].to_vec()).await?;
+    println!("subscribed");
 
-    let fut = timeout(Duration::from_secs(5), ws.next());
-    let msg = fut.await?.expect("ws exited")?;
-    match msg {
-        WebsocketMessage::PublicTrade(trades) => println!("{trades:?}"),
-        WebsocketMessage::OrderBook(orderbook) => println!("{orderbook:?}"),
-        _ => unreachable!(),
+    for _ in 0..100 {
+        let msg = ws.next().await.expect("ws exited")?;
+        println!("{msg:?}");
     }
 }
