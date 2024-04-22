@@ -1,8 +1,6 @@
+use crate::models::order::{CancelOrderResponse, CanceledOrder, NewOrderResponse};
 use crate::models::{
-    spot::{CancelOrderResponse, CanceledOrder, NewOrderResponse, NewOrderResponseType},
-    usdm::PositionSide,
-    usdm::WorkingType,
-    OrderType, Product, Side, TimeInForce,
+    NewOrderResponseType, OrderType, PositionSide, Product, Side, TimeInForce, WorkingType,
 };
 use crate::parser::string_or;
 use fehler::throw;

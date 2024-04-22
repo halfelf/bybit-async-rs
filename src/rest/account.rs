@@ -1,5 +1,5 @@
-use crate::models::usdm::{Asset, Position};
 use crate::models::Product;
+use crate::models::{Asset, Position};
 use crate::parser::string_or;
 use crate::parser::string_or_decimal;
 use reqwest::Method;

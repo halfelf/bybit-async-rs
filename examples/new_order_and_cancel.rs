@@ -1,7 +1,7 @@
 use anyhow::Error;
 use bybit_async::{
     models::{OrderType, Side, TimeInForce},
-    rest::usdm,
+    rest,
     Bybit,
 };
 use fehler::throws;
@@ -15,7 +15,7 @@ async fn main() {
 
     let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
     let resp = bybit
-        .request(usdm::NewOrderRequest {
+        .request(rest::trade::NewOrderRequest {
             symbol: "ethusdt".into(),
             r#type: OrderType::Limit,
             side: Side::Buy,
@@ -29,7 +29,7 @@ async fn main() {
     println!("{resp:?}");
 
     let resp = bybit
-        .request(usdm::CancelOrderRequest {
+        .request(rest::trade::CancelOrderRequest {
             symbol: "ethusdt".into(),
             order_id: Some(resp.order_id),
             ..Default::default()

@@ -1,6 +1,6 @@
 mod account;
 mod market;
-mod trade;
+pub mod trade;
 
 use crate::{
     config::Config,

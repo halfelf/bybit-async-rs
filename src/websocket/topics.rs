@@ -7,7 +7,7 @@ use fehler::{throw, throws};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::from_str;
-use serde_with::{NoneAsEmptyString, DisplayFromStr, serde_as};
+use serde_with::{serde_as, DisplayFromStr, NoneAsEmptyString};
 
 #[derive(Debug, Clone, Serialize)]
 #[non_exhaustive]
@@ -140,7 +140,7 @@ pub struct PublicTradeUpdate {
     #[serde(rename = "p")]
     pub price: Decimal,
     #[serde(rename = "L")]
-    pub liquidity: String,
+    pub tick_direction: String,
     #[serde(rename = "i")]
     pub trade_id: String,
     #[serde(rename = "BT")]

@@ -1,5 +1,5 @@
 use anyhow::Error;
-use bybit_async::{rest::usdm, Bybit};
+use bybit_async::{rest, Bybit};
 use fehler::throws;
 use std::env::var;
 
@@ -8,9 +8,9 @@ use std::env::var;
 async fn get_current_position_mode() {
     env_logger::init();
 
-    let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
-    let resp = bybit
-        .request(usdm::GetCurrentPositionModeRequest {})
-        .await?;
-    println!("{resp:?}");
+    // let bybit = Bybit::with_key_and_secret(&var("BYBIT_KEY")?, &var("BYBIT_SECRET")?);
+    // let resp = bybit
+    //     .request(::GetCurrentPositionModeRequest {})
+    //     .await?;
+    // println!("{resp:?}");
 }

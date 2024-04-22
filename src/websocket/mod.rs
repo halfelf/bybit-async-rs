@@ -7,20 +7,20 @@ use crate::{
 };
 use fehler::{throw, throws};
 use futures::{stream::Stream, SinkExt, StreamExt};
+use hmac::{Hmac, Mac};
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, value::RawValue};
+use sha2::Sha256;
+use std::time::SystemTime;
 use std::{
     marker::PhantomData,
     pin::Pin,
     task::{Context, Poll},
 };
-use std::time::SystemTime;
 use tokio::net::TcpStream;
 use tokio_tungstenite::{connect_async, MaybeTlsStream, WebSocketStream};
 use tungstenite::Message;
-use hmac::{Hmac, Mac};
-use sha2::Sha256;
 
 type WSStream = WebSocketStream<MaybeTlsStream<TcpStream>>;
 
@@ -41,8 +41,7 @@ where
     M: ParseMessage,
 {
     #[throws(BybitError)]
-    pub async fn new(config: Config) -> BybitWebsocket<M>
-    {
+    pub async fn new(config: Config) -> BybitWebsocket<M> {
         let base = if config.api_key.is_none() {
             match config.product {
                 Product::Spot => &config.spot_ws_endpoint,
@@ -50,8 +49,7 @@ where
                 Product::CoinMFutures => &config.coinm_futures_ws_endpoint,
                 Product::EuropeanOptions => &config.european_options_ws_endpoint,
             }
-        }
-        else {
+        } else {
             &config.private_ws_endpoint
         };
         let endpoint = Url::parse(base).unwrap();
@@ -65,12 +63,15 @@ where
         };
 
         let private = config.api_secret.is_some() && config.api_key.is_some();
-        if config.api_key.is_some() {
-            let since_epoch = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        if private {
+            let since_epoch = SystemTime::now()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap();
             let in_ms = since_epoch.as_millis() as u64;
             let expires = in_ms + 1_000;
 
-            let mut mac = Hmac::<Sha256>::new_from_slice(config.api_secret.unwrap().as_bytes()).unwrap();
+            let mut mac =
+                Hmac::<Sha256>::new_from_slice(config.api_secret.unwrap().as_bytes()).unwrap();
             let sign_message = format!("GET/realtime{}", expires);
             mac.update(sign_message.as_bytes());
             let signature = hex::encode(mac.finalize().into_bytes());
@@ -89,8 +90,7 @@ where
         }
     }
 
-    pub async fn subscribe(&mut self, topics: Vec<&str>) -> Result<(), BybitError>
-    {
+    pub async fn subscribe(&mut self, topics: Vec<&str>) -> Result<(), BybitError> {
         let topics: Vec<&str> = topics.into_iter().collect();
         let msg = serde_json::to_string(&serde_json::json!({
             "op": "subscribe",
@@ -149,31 +149,23 @@ where
             Message::Close(_) => return Poll::Ready(None),
         };
 
-        println!("{:?}", &msg);
-
         if self.private {
             let try_message = from_str::<PrivateMessage>(&msg);
             if try_message.is_ok() {
                 let message = try_message.unwrap();
-                println!("try_message: id: {}, topic: {}, ts: {}, data: {}", &message.id, &message.topic, &message.creation_time, &message.data);
                 Poll::Ready(Some(M::parse(&message.topic, message.data.get())))
+            } else {
+                // auth/sub success
+                Poll::Ready(Some(Ok(M::parse_succ(&msg).unwrap())))
             }
-            else {  // auth/sub success
-                println!("check parse succ");
+        } else {
+            let try_message = from_str::<PublicMessage>(&msg);
+            if try_message.is_ok() {
+                let message = try_message.unwrap();
+                Poll::Ready(Some(M::parse(&message.topic, message.data.get())))
+            } else {
                 Poll::Ready(Some(Ok(M::parse_succ(&msg).unwrap())))
             }
         }
-        else {
-            let message = from_str::<PublicMessage>(&msg)?;
-            println!("try_message: topic: {}, type: {}, ts: {}, data: {}", &message.topic, &message.type_, &message.ts, &message.data);
-            Poll::Ready(Some(M::parse(&message.topic, message.data.get())))
-        }
     }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-enum Either<L, R> {
-    Left(L),
-    Right(R),
 }
